@@ -1,6 +1,6 @@
 # Big Data Guys
 
-Project description (~1 paragraph)
+Project description (~1 paragraph) Clay will add
 
 ## Team Members and Roles
 
