@@ -4,7 +4,7 @@ Project description (~1 paragraph)
 
 ## Team Members and Roles
 
-* Dean Berg
+* [Dean Berg](https://github.com/DeanB27/CIS350-HW2-Berg)
 * [Clay Beal](https://github.com/clayster4004/CIS350-HW2-Beal)
 * Member 3 (Role 5, Role 6)
 
