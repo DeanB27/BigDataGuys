@@ -12,6 +12,7 @@ playlist link directly into the website.
 * [Dean Berg](https://github.com/DeanB27/CIS350-HW2-Berg)
 * [Clay Beal](https://github.com/clayster4004/CIS350-HW2-Beal)
 * [Ian McCourt](https://github.com/ianmccourt/CIS350-HW2-McCourt)
+* [Aaron Dies](https://github.com/diesat/CIS350-HW2-Dies)
 
 ## Prerequisites
 
