@@ -1,6 +1,6 @@
 Team name: Big Data Guys
 
-Team members:
+Team members: Clay Beal, Dean Berg, Ian McCourt, Aaron Dies
 
 # Introduction
 
