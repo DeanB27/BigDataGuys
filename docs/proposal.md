@@ -6,7 +6,7 @@ Team members: Clay Beal, Dean Berg, Ian McCourt, Aaron Dies
 
 (In 2-4 paragraphs, describe your project concept)
 
-Our project is going to be a Spotify playlist analyzer. The features we intend to add are a basic analysis process that will show the percentages of each genre of your collective playlist and show them in a easy to view dashboard. In addition to this, we play to use metrics such as mood/vibe to describe your playlist as a whole. For example, "happiness", "dancibility", "energy", "popularity", etc...
+Our project is going to be a Spotify playlist analyzer. The features we intend to add are a basic analysis process that will show the percentages of each genre of your collective playlist and show them in a easy to view dashboard. In addition to this, we plan to use metrics such as mood/vibe to describe your playlist as a whole. For example, "happiness", "dancibility", "energy", "popularity", etc...
 
 We will pull the data using Spotify's API and user credentials upon the user linking thier playlist to our web-hosted dashboard. The website will be made through streamlit which hosts directly from the github repository. Streamlit is a python package where one can create a front-end dashboard. Streamlit community is a cloud hosting service that connects to your github repository and hosts web-apps for free. 
 
