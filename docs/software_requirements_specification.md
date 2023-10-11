@@ -1,5 +1,5 @@
 # Overview
-<Describe the purpose of this document in 1 paragraph of less ... hint: it is your SRS>
+The purpose of this software requirements document is to outline the requirements that our program must adhere to. These include functionality features and backend features. The main requirments outlined include login requirments, dashboard requirements, and analysis requirements.    
 
 # Functional Requirements
 1. Spotify API Connectivity  
