@@ -110,5 +110,3 @@ if playlist_id:
     top_artistss = df.groupby("Name").mean().sort_values("Popularity", ascending=False).head(10)
     fig_top_artistss = px.bar(top_artistss, x=top_artistss.index, y="Popularity", title="Top 10 Songs")
     st.plotly_chart(fig_top_artistss)
-
-#comment
