@@ -9,9 +9,15 @@
 #### Linked playlist was RapCaviar  
 <img width="1379" alt="Screenshot 2023-11-01 at 12 34 06 PM" src="https://github.com/DeanB27/GVSU-CIS350-BigDataGuys/assets/125436817/0f5e4941-4e53-4d2c-a30b-c7b77e8fd543">
 
-## Task 2: Put task 2 here   
-* put images here
+## Task 2: Added images to user interface  
 
+#### Website Logo  
+
+#### Album Cover for Analyzed Playlist  
+
+#### Reccomendation Album Covers  
+
+<img width="524" alt="Screenshot 2023-11-01 at 12 41 49 PM" src="https://github.com/DeanB27/GVSU-CIS350-BigDataGuys/assets/125436817/3fe6bd5d-f3c3-4654-85e3-e667126edec7">
 
 
 
