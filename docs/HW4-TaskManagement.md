@@ -13,11 +13,21 @@
 
 #### Website Logo  
 
+<img width="359" alt="Screenshot 2023-11-01 at 12 43 54 PM" src="https://github.com/DeanB27/GVSU-CIS350-BigDataGuys/assets/94263234/d3ae1266-bd45-4047-b7e0-fc7feceef673">
+
 #### Album Cover for Analyzed Playlist  
+
+<img width="620" alt="Screenshot 2023-11-01 at 12 43 26 PM" src="https://github.com/DeanB27/GVSU-CIS350-BigDataGuys/assets/94263234/d808d6e6-e679-44c1-9337-217aba5c624a">
 
 #### Reccomendation Album Covers  
 
 <img width="524" alt="Screenshot 2023-11-01 at 12 41 49 PM" src="https://github.com/DeanB27/GVSU-CIS350-BigDataGuys/assets/125436817/3fe6bd5d-f3c3-4654-85e3-e667126edec7">
+
+
+
+
+
+
 
 
 
