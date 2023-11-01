@@ -113,7 +113,7 @@ if playlist_id:
         for track in recommendations:
             st.write(track['name'])
             # st.write(track['artists'])
-            st.image(track['album']['images'][0]['url'])
+            st.image(track['album']['images'][0]['url'], width=400)
 
 
 # display a bar chart of the top 10 most popular artists in the playlist
