@@ -111,8 +111,7 @@ if playlist_id:
         recommendations = get_recommendations(track_names)
         st.write("Recommended songs:")
         for track in recommendations:
-            st.write(track['name'])
-            # st.write(track['artists'])
+            st.write(f"{track['name']} ---- {track['artists'][0]['name']}")
             st.image(track['album']['images'][0]['url'], width=400)
 
 
