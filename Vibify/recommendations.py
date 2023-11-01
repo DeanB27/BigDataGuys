@@ -110,7 +110,7 @@ if playlist_id:
 
 
     if tracks:
-        recommendations = get_recommendations(tracks[:5])
+        recommendations = get_recommendations(track_names)
         st.write("Recommended songs:")
         for track in recommendations:
             st.write(track['name'])
