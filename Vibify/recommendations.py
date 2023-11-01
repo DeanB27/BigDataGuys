@@ -6,7 +6,6 @@ import plotly.express as px
 from PIL import Image
 import re
 import urllib.request
-from streamlit_extras.let_it_rain import rain
 
 
 def id_from_url(url):
