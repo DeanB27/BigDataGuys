@@ -5,7 +5,6 @@ import pandas as pd
 import plotly.express as px
 from PIL import Image
 import re
-import urllib.request
 
 
 def id_from_url(url):
