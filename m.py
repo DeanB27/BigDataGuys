@@ -12,9 +12,9 @@ import re
 
 
 # Your Spotify API credentials (note: it's not secure to include your credentials in the code)
-client_id = st.secrets["spotify"]["client_id"]
-client_secret = st.secrets["spotify"]["client_secret"]
-redirect_uri = st.secrets["spotify"]["redirect_uri"]
+client_id = st.secrets["SPOTIPY_CLIENT_ID"]
+client_secret = st.secrets["SPOTIPY_CLIENT_SECRET"]
+redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"]
 
 # Set up the Spotify client credentials manager and Spotipy client
 client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
