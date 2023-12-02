@@ -1,5 +1,4 @@
 spotipy
-spotipy.oauth2
 streamlit
 pandas
 plotly
