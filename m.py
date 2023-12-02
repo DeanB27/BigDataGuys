@@ -23,7 +23,7 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-sp_oauth = SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,
+sp_oauth = spotipy.SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,
                         scope="user-library-read playlist-read-private")
 
 class Playlist:
@@ -706,7 +706,7 @@ def main():
 
     # Check if the login button is clicked
     if login_button:
-        sp, selected_playlist_name = c.login()
+        sp, selected_playlist_name = login()
 
         # Store the selected playlist name in session state
         st.session_state.selected_playlist_name = selected_playlist_name
@@ -737,7 +737,7 @@ def handle_playlist_selection(sp):
 
     if selected_playlist:
         playlist_id = selected_playlist['id']
-        run(c.Playlist(playlist_id))
+        run(Playlist(playlist_id))
         st.success('Got playlist!')
     else:
         st.warning(f"Playlist with name '{st.session_state.selected_playlist_name}' not found.")
