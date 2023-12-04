@@ -687,8 +687,8 @@ def main():
                                                        scope="user-library-read playlist-read-private",  # Scope for reading playlists
                                                        show_dialog=True))
 
-        st.session_state.user = sp.current_user()
-        st.sidebar.success(f"Logged in as {st.session_state.user['display_name']}")
+        user = sp.current_user()
+        st.sidebar.success(f"Logged in as {user['display_name']}")
 
         # Get the playlists of the authenticated user
         st.session_state.playlists = sp.current_user_playlists()
