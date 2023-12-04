@@ -687,13 +687,13 @@ def main():
                                                        scope="user-library-read playlist-read-private",  # Scope for reading playlists
                                                        show_dialog=True))
 
-        st.session_state.user = sp.current_user()
-        st.sidebar.success(f"Logged in as {user['display_name']}")
+        st.session_state.user = st.session_state.sp.current_user()
+        st.sidebar.success(f"Logged in as {st.session_state.user['display_name']}")
 
         # Get the playlists of the authenticated user
-        st.session_state.playlists = sp.current_user_playlists()
+        st.session_state.playlists = st.session_state.sp.current_user_playlists()
 
-        st.session_state.spotify_playlists = playlists['items']
+        st.session_state.spotify_playlists = st.session_state.playlists['items']
 
         # Iterate through the playlists and print their names and external URLs
         #st.sidebar.subheader("Your Spotify Playlists:")
@@ -714,8 +714,8 @@ def main():
 
     def generate_analysis(playlist):
         #print(f"button for {playlist['name']} hit")
-        st.session_state.playlist_name = playlist['external_urls']['spotify']
-        return playlist_name
+        st.session_state.playlist_name = st.session_state.playlist['external_urls']['spotify']
+        return st.session_state.playlist_name
         #st.sidebar.text(playlist_name)
         #p = c.Playlist(playlist_name)
         #c.run(p)
