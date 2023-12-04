@@ -34,8 +34,8 @@ class Playlist:
         # Your Spotify API credentials (note: it's not secure to include your credentials in the code)
         # client_id = '8cfa81fbc4074f3aad32716a36044864'
         # client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
-        client_id = '8cfa81fbc4074f3aad32716a36044864'
-        client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
+        client_id = st.secrets["SPOTIPY_CLIENT_ID"]
+        client_secret = st.secrets["SPOTIPY_CLIENT_SECRET"]
         # Set up the Spotify client credentials manager and Spotipy client
         client_credentials_manager = spotipy.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
@@ -655,9 +655,9 @@ def run(p):
 # Real Main
 def main():
     # Spotify app credentials from your Spotify Developer Dashboard
-    SPOTIPY_CLIENT_ID = '8cfa81fbc4074f3aad32716a36044864'
-    SPOTIPY_CLIENT_SECRET = 'a64ec813eaa24d19a42c694dbc61ba35'
-    SPOTIPY_REDIRECT_URI = 'https://vibifytest02.streamlit.app'
+    SPOTIFY_CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
+    SPOTIFY_CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
+    SPOTIFY_REDIRECT_URI = st.secrets["SPOTIPY_REDIRECT_URI"]
 
     st.title("Spotify Playlist Analyzer")
 
@@ -677,13 +677,13 @@ def main():
     #c.spotify_login_and_fetch_playlists()
     if st.sidebar.button("Login to Spotify"):
         # Spotify API credentials
-        CLIENT_ID = '8cfa81fbc4074f3aad32716a36044864'
-        CLIENT_SECRET = 'a64ec813eaa24d19a42c694dbc61ba35'
+        CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
+        CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
         
         # Authenticate the user with Spotify
         sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
                                                        CLIENT_SECRET,
-                                                       redirect_uri="https://vibifytest02.streamlit.app",
+                                                       redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"],
                                                        scope="playlist-read-private",  # Scope for reading playlists
                                                        show_dialog=True))
 
