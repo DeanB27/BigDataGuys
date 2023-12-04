@@ -684,7 +684,7 @@ def main():
         sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
                                                        CLIENT_SECRET,
                                                        redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"],
-                                                       scope="playlist-read-private",  # Scope for reading playlists
+                                                       scope="user-library-read playlist-read-private",  # Scope for reading playlists
                                                        show_dialog=True))
 
         st.session_state.user = sp.current_user()
@@ -722,14 +722,14 @@ def main():
 
         # Print the contents of the session state variable and add a button for each playlist
     if 'spotify_playlists' in st.session_state:
-        playlists = st.session_state.spotify_playlists
-        for idx, playlist in enumerate(playlists):
-            st.sidebar.write(f"{idx + 1}. {playlist['name']}")
-            st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
-            generate_button = st.sidebar.button(f"Generate Analysis for {playlist['name']}", key=f"generate_{idx}")
-            if generate_button:
+        st.session_state.playlists = st.session_state.spotify_playlists
+        for idx, st.session_state.playlist in enumerate(st.session_state.playlists):
+            st.sidebar.write(f"{idx + 1}. {st.session_state.playlist['name']}")
+            st.sidebar.write(f"   External URL: {st.session_state.playlist['external_urls']['spotify']}")
+            st.session_state.generate_button = st.sidebar.button(f"Generate Analysis for {st.session_state.playlist['name']}", key=f"generate_{idx}")
+            if st.session_state.generate_button:
                 # Call a function to generate the analysis for the selected playlist
-                playlist_name = generate_analysis(playlist)
+                st.session_state.playlist_name = generate_analysis(playlist)
     else:
         #st.write("No Spotify playlists available. Please log in to Spotify.")
         pass
