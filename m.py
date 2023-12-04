@@ -681,13 +681,13 @@ def main():
         CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
         
         # Authenticate the user with Spotify
-        st.session_state.sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
+        sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
                                                        CLIENT_SECRET,
                                                        redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"],
                                                        scope="user-library-read playlist-read-private",  # Scope for reading playlists
                                                        show_dialog=True))
 
-        user = sp.current_user()
+        st.session_state.user = sp.current_user()
         st.sidebar.success(f"Logged in as {user['display_name']}")
 
         # Get the playlists of the authenticated user
