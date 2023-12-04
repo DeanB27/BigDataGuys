@@ -18,10 +18,10 @@ redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"]
 
 
 # Set up the Spotify client credentials manager and Spotipy client
-client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+client_credentials_manager = spotipy.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+client_credentials_manager = spotipy.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 sp_oauth = spotipy.SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,
@@ -37,7 +37,7 @@ class Playlist:
         client_id = '8cfa81fbc4074f3aad32716a36044864'
         client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
         # Set up the Spotify client credentials manager and Spotipy client
-        client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+        client_credentials_manager = spotipy.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
         self._url_type, self._playlist_id = Playlist.id_from_url(playlist_name)  # done
