@@ -681,7 +681,7 @@ def main():
         CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
         
         # Authenticate the user with Spotify
-        sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
+        st.session_state.sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
                                                        CLIENT_SECRET,
                                                        redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"],
                                                        scope="user-library-read playlist-read-private",  # Scope for reading playlists
@@ -693,7 +693,7 @@ def main():
         # Get the playlists of the authenticated user
         st.session_state.playlists = sp.current_user_playlists()
 
-        st.session_state.spotify_playlists = st.session_state.playlists['items']
+        st.session_state.spotify_playlists = playlists['items']
 
         # Iterate through the playlists and print their names and external URLs
         #st.sidebar.subheader("Your Spotify Playlists:")
@@ -714,7 +714,7 @@ def main():
 
     def generate_analysis(playlist):
         #print(f"button for {playlist['name']} hit")
-        playlist_name = playlist['external_urls']['spotify']
+        st.session_state.playlist_name = playlist['external_urls']['spotify']
         return playlist_name
         #st.sidebar.text(playlist_name)
         #p = c.Playlist(playlist_name)
