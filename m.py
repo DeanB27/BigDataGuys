@@ -687,13 +687,13 @@ def main():
                                                        scope="playlist-read-private",  # Scope for reading playlists
                                                        show_dialog=True))
 
-        user = sp.current_user()
-        st.sidebar.success(f"Logged in as {user['display_name']}")
+        st.session_state.user = sp.current_user()
+        st.sidebar.success(f"Logged in as {st.session_state.user['display_name']}")
 
         # Get the playlists of the authenticated user
-        playlists = sp.current_user_playlists()
+        st.session_state.playlists = sp.current_user_playlists()
 
-        st.session_state.spotify_playlists = playlists['items']
+        st.session_state.spotify_playlists = st.session_state.playlists['items']
 
         # Iterate through the playlists and print their names and external URLs
         #st.sidebar.subheader("Your Spotify Playlists:")
