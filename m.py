@@ -657,7 +657,7 @@ def main():
     # Spotify app credentials from your Spotify Developer Dashboard
     SPOTIPY_CLIENT_ID = '8cfa81fbc4074f3aad32716a36044864'
     SPOTIPY_CLIENT_SECRET = 'a64ec813eaa24d19a42c694dbc61ba35'
-    SPOTIPY_REDIRECT_URI = 'http://localhost:8000'
+    SPOTIPY_REDIRECT_URI = 'https://vibifytest02.streamlit.app'
 
     st.title("Spotify Playlist Analyzer")
 
@@ -683,7 +683,7 @@ def main():
         # Authenticate the user with Spotify
         sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
                                                        CLIENT_SECRET,
-                                                       redirect_uri="http://localhost:8080/",
+                                                       redirect_uri="https://vibifytest02.streamlit.app",
                                                        scope="playlist-read-private",  # Scope for reading playlists
                                                        show_dialog=True))
 
