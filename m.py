@@ -27,10 +27,20 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 sp_oauth = spotipy.SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,
                         scope="user-library-read playlist-read-private")
 
+
 class Playlist:
     def __init__(self, playlist_name):
 
-        self._playlist_id = playlist_name  # done
+        # Your Spotify API credentials (note: it's not secure to include your credentials in the code)
+        # client_id = '8cfa81fbc4074f3aad32716a36044864'
+        # client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
+        client_id = '8cfa81fbc4074f3aad32716a36044864'
+        client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
+        # Set up the Spotify client credentials manager and Spotipy client
+        client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+        sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+        self._url_type, self._playlist_id = Playlist.id_from_url(playlist_name)  # done
         self._playlist = sp.playlist(self._playlist_id)  # done
         self._playlist_name = self._playlist['name']  # done
         self._playlist_image = self._playlist['images'][0]['url']  # done
@@ -78,10 +88,9 @@ class Playlist:
             url_regex = re.search(
                 r"^https?:\/\/(?:open\.)?spotify.com\/(user|episode|playlist|track|album)\/(?:spotify\/playlist\/)?(\w*)",
                 url)
-            return url_regex.group(2)
+            return url_regex.group(1), url_regex.group(2)
         except AttributeError:
             st.error("Invalid URL")  # Display an error message in the Streamlit app if the URL is invalid
-
 
     @property
     def playlist_id(self):
@@ -391,65 +400,24 @@ class Playlist:
         return mood_percentages
 
 
+# def display_page():
+#     SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
+#     SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
+#     SPOTIPY_REDIRECT_URI = 'http://localhost:8080/'
+    
+# #     # Keep
+#     # Set up the Streamlit app title
+#     st.title("Spotify Playlist Analyzer")
 
-@st.cache_data(show_spinner=False)
-def fetch_playlists(token_info):
-    sp = spotipy.Spotify(auth=token_info["access_token"])
-    return sp.current_user_playlists()
+#     # Load an image and display it in the Streamlit sidebar
+#     image = Image.open('Vibify.png')
+#     st.sidebar.image(image)
 
-
-def login():
-    # Get the access token or redirect to Spotify login page
-    token_info = sp_oauth.get_cached_token()
-
-    # Check if the URL contains the authorization code
-    url_params = st.experimental_get_query_params()
-    code = url_params.get("code", None)
-
-    if not token_info and not code:
-        auth_url = sp_oauth.get_authorize_url()
-        st.info("Please log in to Spotify.")
-        st.markdown(f"Click [here]({auth_url}) to log in.")
-
-    # If the URL contains the authorization code, get the access token
-    if code:
-        try:
-            token_info = sp_oauth.get_access_token(code)
-            st.success("Successfully authenticated! You can now fetch your playlists.")
-        except spotipy.SpotifyException as e:
-            st.error(f"Error authenticating: {e}")
-
-    if token_info:
-        # Refresh the access token if it's expired
-        if sp_oauth.is_token_expired(token_info):
-            try:
-                token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-                st.success("Successfully refreshed access token.")
-            except spotipy.SpotifyException as e:
-                st.error(f"Error refreshing access token: {e}")
-
-        # Display user information
-        sp = spotipy.Spotify(auth=token_info["access_token"])
-        user_info = sp.me()
-
-        if 'images' in user_info and user_info['images']:
-            profile_picture_url = user_info['images'][0]['url']
-            st.image(profile_picture_url, caption=user_info['display_name'], width=75)
-        else:
-            st.warning("User profile picture not available.")
-
-        # Fetch and display user playlists
-        playlists = fetch_playlists(token_info)
-
-        # Create a dropdown to select a playlist
-        selected_playlist_name = st.selectbox("Select a playlist:",
-                                              [playlist['name'] for playlist in playlists['items']])
-
-        return sp, selected_playlist_name  # Return the Spotify client and selected playlist name
-
-
-def display_page():
-    pass
+#     # Keep
+#     # Create an input field in the sidebar for the Spotify playlist URL
+#     #if st.sidebar.text_input("Enter the URL of the Spotify playlist:"):
+#     playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
+#     return playlist_name
 
 
 def display_playlist_info(p: Playlist):
@@ -467,7 +435,7 @@ def display_playlist_info(p: Playlist):
     # st.markdown(f"**Number of tracks:** {len(p.track_info)}")
     # st.markdown("## Tracklist")
 
-    total_duration_hours = p._combined_durations // (1000 * 60 * 60)
+    total_duration_hours = (p._combined_durations) // (1000 * 60 * 60)
     remaining_ms = p._combined_durations % (1000 * 60 * 60)
     remaining_minutes = remaining_ms // (1000 * 60)
 
@@ -629,6 +597,7 @@ def display_mood_pi(p):
     #Showing the pie chart
     st.plotly_chart(fig)
 
+
 def display_top10_artists(p):
     artist_popularity = {}
     for track_info in p.track_info.values():
@@ -681,68 +650,163 @@ def run(p):
     display_recommendations(p)
 
 
-@st.cache_resource(show_spinner=False, experimental_allow_widgets=True)
+
+
+# Real Main
 def main():
+    # Spotify app credentials from your Spotify Developer Dashboard
+    SPOTIPY_CLIENT_ID = '8cfa81fbc4074f3aad32716a36044864'
+    SPOTIPY_CLIENT_SECRET = 'a64ec813eaa24d19a42c694dbc61ba35'
+    SPOTIPY_REDIRECT_URI = 'http://localhost:8000'
+
     st.title("Spotify Playlist Analyzer")
+
+    # Load an image and display it in the Streamlit sidebar
     image = Image.open('Vibify.png')
     st.sidebar.image(image)
 
-    playlist_name = st.sidebar.text_input("Enter the URL of your Spotify playlist:")
-    st.sidebar.write("Or...")
 
-    # Use st.button with a specific key
-    login_button = st.sidebar.button("Login with Spotify", key="login_button", use_container_width=True)
+    try:
+        playlist_name
+    except NameError:
+        playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
 
-    # Initialize session state
-    if 'selected_playlist_name' not in st.session_state:
-        st.session_state.selected_playlist_name = None
+
+    # NEW
+    playlists_dict = {}
+    #c.spotify_login_and_fetch_playlists()
+    if st.sidebar.button("Login to Spotify"):
+        # Spotify API credentials
+        CLIENT_ID = '8cfa81fbc4074f3aad32716a36044864'
+        CLIENT_SECRET = 'a64ec813eaa24d19a42c694dbc61ba35'
+        
+        # Authenticate the user with Spotify
+        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(CLIENT_ID,
+                                                       CLIENT_SECRET,
+                                                       redirect_uri="http://localhost:8080/",
+                                                       scope="playlist-read-private",  # Scope for reading playlists
+                                                       show_dialog=True))
+
+        user = sp.current_user()
+        st.sidebar.success(f"Logged in as {user['display_name']}")
+
+        # Get the playlists of the authenticated user
+        playlists = sp.current_user_playlists()
+
+        st.session_state.spotify_playlists = playlists['items']
+
+        # Iterate through the playlists and print their names and external URLs
+        #st.sidebar.subheader("Your Spotify Playlists:")
+        #for idx, playlist in enumerate(playlists['items']):
+            #st.sidebar.write(f"{idx + 1}. {playlist['name']}")
+            #st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
+        # END
+
+
+    #     # Print the contents of the session state variable
+    # if 'spotify_playlists' in st.session_state:
+    #     playlists = st.session_state.spotify_playlists
+    #     for idx, playlist in enumerate(playlists):
+    #         st.write(f"{idx + 1}. {playlist['name']}")
+    #         st.write(f"   External URL: {playlist['external_urls']['spotify']}")
+    # else:
+    #     st.write("No Spotify playlists available. Please log in to Spotify.")
+
+    def generate_analysis(playlist):
+        #print(f"button for {playlist['name']} hit")
+        playlist_name = playlist['external_urls']['spotify']
+        return playlist_name
+        #st.sidebar.text(playlist_name)
+        #p = c.Playlist(playlist_name)
+        #c.run(p)
+
+        # Print the contents of the session state variable and add a button for each playlist
+    if 'spotify_playlists' in st.session_state:
+        playlists = st.session_state.spotify_playlists
+        for idx, playlist in enumerate(playlists):
+            st.sidebar.write(f"{idx + 1}. {playlist['name']}")
+            st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
+            generate_button = st.sidebar.button(f"Generate Analysis for {playlist['name']}", key=f"generate_{idx}")
+            if generate_button:
+                # Call a function to generate the analysis for the selected playlist
+                playlist_name = generate_analysis(playlist)
+    else:
+        #st.write("No Spotify playlists available. Please log in to Spotify.")
+        pass
+
+
+
+
+
+    # st.title("Spotify Playlist Analyzer")
+
+    # # Load an image and display it in the Streamlit sidebar
+    # image = Image.open('Vibify.png')
+    # st.sidebar.image(image)
+
+    # Keep
+    # Create an input field in the sidebar for the Spotify playlist URL
+    #if st.sidebar.text_input("Enter the URL of the Spotify playlist:"):
+    # try:
+    #     playlist_name
+    # except NameError:
+    #     playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
+
+
+
+    #playlist_name = c.display_page()
+    flag = False
+
+    # Define the desired loading bar color (Spotify green)
+    loading_bar_color = "#1DB954"
+
+    # Define the custom CSS style for the loading bar with the chosen color
+    loading_bar_style = f"""
+    <style>
+    @keyframes loading {{
+        0% {{
+            width: 0%;
+        }}
+        100% {{
+            width: 100%;
+        }}
+    }}
+
+    .loading-bar {{
+        width: 100%;
+        background-color: #ddd;
+        position: relative;
+    }}
+
+    .loading-bar div {{
+        height: 4px;
+        background-color: {loading_bar_color};  # Set the color here
+        width: 0;
+        position: absolute;
+        animation: loading 2s linear infinite;
+    }}
+    </style>
+    """
+
+    # Display the custom CSS style
+    st.markdown(loading_bar_style, unsafe_allow_html=True)
+    loading_container = st.empty()
+
 
     if playlist_name:
-        url_type, playlist_id1 = c.Playlist.id_from_url(playlist_name)
-        Playlist(playlist_id1)
-    else:
-        playlist_id1 = None
-
-    sp = None  # Initialize Spotify client outside of the if conditions
-
-    # Check if the login button is clicked
-    if login_button:
-        sp, selected_playlist_name = login()
-
-        # Store the selected playlist name in session state
-        st.session_state.selected_playlist_name = selected_playlist_name
-
-    if playlist_id1 or (sp and st.session_state.selected_playlist_name):
-        # Call a separate function to handle playlist selection
-        handle_playlist_selection(sp)
+        loading_container.markdown('<div class="loading-bar"><div></div></div>', unsafe_allow_html=True)
+        # This is where you instantiate the class
+        p = Playlist(playlist_name)
+        flag = True
+        loading_container.empty()
 
 
-# Function to handle playlist selection
-def handle_playlist_selection(sp):
-    # Fetch user's playlists
-    playlists = sp.current_user_playlists()
-
-    # Create a dropdown to select a playlist
-    selected_playlist_name = st.selectbox("Select a playlist:",
-                                          [playlist['name'] for playlist in playlists['items']],
-                                          key="playlist_dropdown")
-
-    # Store the selected playlist name in session state
-    st.session_state.selected_playlist_name = selected_playlist_name
-
-    # Find the playlist with the matching name
-    selected_playlist = next(
-        (playlist for playlist in playlists['items'] if playlist['name'] == st.session_state.selected_playlist_name),
-        None
-    )
-
-    if selected_playlist:
-        playlist_id = selected_playlist['id']
-        run(Playlist(playlist_id))
-        st.success('Got playlist!')
-    else:
-        st.warning(f"Playlist with name '{st.session_state.selected_playlist_name}' not found.")
-
+    # If we have a valid playlist ID, proceed to fetch and display playlist data
+    if flag:
+        #st.balloons(bg_color="green")
+        st.balloons()  # Show celebration balloons in the app
+        run(p)
 
 if __name__ == '__main__':
     main()
+
