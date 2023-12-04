@@ -9,24 +9,19 @@ import pandas as pd
 import plotly.express as px
 from PIL import Image
 import re
+#import c
+import time
+from spotipy.oauth2 import SpotifyOAuth
+import os
+#from flask import Flask, request
 
+# Spotify app credentials from your Spotify Developer Dashboard
+SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
+SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
+SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
 
-# Your Spotify API credentials (note: it's not secure to include your credentials in the code)
-client_id = st.secrets["SPOTIPY_CLIENT_ID"]
-client_secret = st.secrets["SPOTIPY_CLIENT_SECRET"]
-redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"]
-
-
-# Set up the Spotify client credentials manager and Spotipy client
-client_credentials_manager = spotipy.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-client_credentials_manager = spotipy.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-sp_oauth = spotipy.SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,
-                        scope="user-library-read playlist-read-private")
-
+# Create a SpotifyOAuth instance
+#sp_oauth = SpotifyOAuth(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope='user-library-read')
 
 class Playlist:
     def __init__(self, playlist_name):
@@ -34,10 +29,10 @@ class Playlist:
         # Your Spotify API credentials (note: it's not secure to include your credentials in the code)
         # client_id = '8cfa81fbc4074f3aad32716a36044864'
         # client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
-        client_id = st.secrets["SPOTIPY_CLIENT_ID"]
-        client_secret = st.secrets["SPOTIPY_CLIENT_SECRET"]
+        client_id = '2bdfeb8580304b9fb343ff8cc8744e76'
+        client_secret = '73cbcc49de99490f821c2925c2b41419'
         # Set up the Spotify client credentials manager and Spotipy client
-        client_credentials_manager = spotipy.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+        client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
         self._url_type, self._playlist_id = Playlist.id_from_url(playlist_name)  # done
@@ -187,38 +182,11 @@ class Playlist:
 
         self._df = pd.DataFrame(data)
 
-    # def set_df(self):
-    # # Numeric and formatted durations
-    #     numeric_durations = [duration_ms / 60000 for duration_ms in self._durations]  # Duration in minutes
-    #     formatted_durations = []
-    #     for duration_ms in self._durations:
-    #         minutes = duration_ms // 60000
-    #         seconds = (duration_ms % 60000) // 1000
-    #         formatted_duration = f"{minutes}m {seconds}s"
-    #         formatted_durations.append(formatted_duration)
-
-    #     data = {
-    #         "Name": self.tracks,
-    #         "Artist": self.artists,
-    #         "Album": self.albums,
-    #         "Release Date": self.release_dates,
-    #         "Popularity": self.popularities,
-    #         "Duration (min)": numeric_durations,  # Numeric duration for sorting and plotting
-    #         "Duration": formatted_durations  # Formatted duration for display
-    #     }
-
-    #     self._df = pd.DataFrame(data)
-
     @property
     def df(self):
         return self._df
 
-    # def set_recommendations(self, sp):
-    #     # Get track URI and fetch recommendations from Spotify
-    #     results = sp.search(q=self.playlist, type='track')
-    #     track_uri = results['tracks']['items'][0]['uri']
-    #     self._recommendations = sp.recommendations(seed_tracks=[track_uri], limit=20)['tracks']
-
+    
     def get_track_uris(self, sp):
         # Assume self.playlist is a dictionary containing the playlist ID
         playlist_id = self.playlist.get('id')
@@ -250,49 +218,11 @@ class Playlist:
         else:
             print(f"No tracks found in the playlist. Unable to fetch recommendations.")
 
-
-
     @property
     def recommendations(self):
         return self._recommendations
 
-    # def fetch_genres(self, sp):
-    #     self._genres = {}
-    #     for track in self._broad_track_info:
-    #         for artist in track["track"]["artists"]:
-    #             artist_id = artist["id"]
-    #             if artist_id not in self._genres:
-    #                 artist_info = sp.artist(artist_id)
-    #                 self._genres[artist_id] = {
-    #                     'name': artist_info['name'],
-    #                     'genres': artist_info['genres']
-    #                 }
-
-    # def fetch_genres(self, sp):
-    #     self._genres = {}  # to store artist's genres
-    #     genre_count = {}
-    #     total_tracks = 0
-
-    #     for track in self._broad_track_info:
-    #         total_tracks += 1
-    #         artist_genres = set()  # To avoid counting the same genre multiple times for one track
-    #         for artist in track["track"]["artists"]:
-    #             artist_id = artist["id"]
-    #             if artist_id not in self._genres:  # Cache the artist's genres to avoid repeated API calls
-    #                 artist_info = sp.artist(artist_id)
-    #                 self._genres[artist_id] = {
-    #                     'name': artist_info['name'],
-    #                     'genres': artist_info['genres']
-    #                 }
-    #             for genre in self._genres[artist_id]['genres']:
-    #                 artist_genres.add(genre)
-
-    #         for genre in artist_genres:
-    #             genre_count[genre] = genre_count.get(genre, 0) + 1
-
-    #     # Calculate the percentage of each genre
-    #     self._genre_percentages = {genre: (count / total_tracks) * 100 for genre, count in genre_count.items()}
-
+    
     # THIS WORKS
     def fetch_genres(self, sp):
         genre_count = {}
@@ -421,20 +351,6 @@ class Playlist:
 
 
 def display_playlist_info(p: Playlist):
-    # # Display the playlist information and cover image
-    # st.write(f"## {p.playlist_name}")
-    # st.image(p.playlist_image, width=250)
-    # st.write(f"Description: {p.playlist_desc}")
-    # st.write(f"Number of tracks: {len(p.track_info)}")
-    # st.write("### Tracklist")
-
-    # Display the playlist information and cover image
-    # st.markdown(f"# {p.playlist_name}")
-    # st.image(p.playlist_image, width=250)
-    # st.markdown(f"**Description:** {p.playlist_desc}")
-    # st.markdown(f"**Number of tracks:** {len(p.track_info)}")
-    # st.markdown("## Tracklist")
-
     total_duration_hours = (p._combined_durations) // (1000 * 60 * 60)
     remaining_ms = p._combined_durations % (1000 * 60 * 60)
     remaining_minutes = remaining_ms // (1000 * 60)
@@ -515,29 +431,22 @@ def display_multivariate_analysis(p):
                                   hover_data={"Duration (min)": False, "Duration": True})
     st.plotly_chart(fig_multivariate)
 
-
 def display_playlist_summary(p):
+    # Convert the 'Popularity' column to numeric type
+    p.df['Popularity'] = pd.to_numeric(p.df['Popularity'], errors='coerce')
+
     # Provide a summary of the playlist, showing the most and least popular tracks
-    st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Playlist Summary</div>",unsafe_allow_html=True)
-    st.write(
-        f"**Most popular track:** {p.df.iloc[p.df['Popularity'].idxmax()]['Name']} by {p.df.iloc[p.df['Popularity'].idxmax()]['Artist']} ({p.df['Popularity'].max()} popularity)")
-    st.write(
-        f"**Least popular track:** {p.df.iloc[p.df['Popularity'].idxmin()]['Name']} by {p.df.iloc[p.df['Popularity'].idxmin()]['Artist']} ({p.df['Popularity'].min()} popularity)")
+    st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Playlist Summary</div>", unsafe_allow_html=True)
 
+    most_popular_track = p.df.loc[p.df['Popularity'].idxmax()]
+    least_popular_track = p.df.loc[p.df['Popularity'].idxmin()]
 
-# def display_recommendations(p):
-#     st.write("Recommended songs:")
-#
-#     for track in p.recommendations:
-#         # Display the song name
-#         st.write(track['name'])
-#
-#         # Create a clickable link to the Spotify song
-#         spotify_url = track['external_urls']['spotify']
-#         st.markdown(f"[Listen on Spotify]({spotify_url})")
-#
-#         # Display the image
-#         st.image(track['album']['images'][0]['url'], width=120)
+    st.write(
+        f"Most popular track: {most_popular_track['Name']} by {most_popular_track['Artist']} ({most_popular_track['Popularity']} popularity)"
+    )
+    st.write(
+        f"Least popular track: {least_popular_track['Name']} by {least_popular_track['Artist']} ({least_popular_track['Popularity']} popularity)"
+    )
 
 def display_recommendations(p):
     st.write("Recommended songs:")
@@ -572,7 +481,6 @@ def display_song(track, col_width, spacing):
     )
 
 
-
 def display_genre_pi(p):
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Genre Percentages</div>",unsafe_allow_html=True)
     # Creating a pie chart
@@ -596,7 +504,6 @@ def display_mood_pi(p):
 
     #Showing the pie chart
     st.plotly_chart(fig)
-
 
 def display_top10_artists(p):
     artist_popularity = {}
@@ -642,7 +549,7 @@ def run(p):
     display_playlist_summary(p)
     display_pop_chart(p)
     display_bivariate_analysis(p)
-    display_multivariate_analysis(p)
+    #display_multivariate_analysis(p)
     display_genre_pi(p)
     display_mood_pi(p)
     display_top10_artists(p)
@@ -650,20 +557,41 @@ def run(p):
     display_recommendations(p)
 
 
-
-
 # Real Main
 def main():
+    #print('RAN THIS')
     # Spotify app credentials from your Spotify Developer Dashboard
-    SPOTIFY_CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
-    SPOTIFY_CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
-    SPOTIFY_REDIRECT_URI = st.secrets["SPOTIPY_REDIRECT_URI"]
-
+    SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
+    SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
+    SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
+    
     st.title("Spotify Playlist Analyzer")
 
     # Load an image and display it in the Streamlit sidebar
     image = Image.open('Vibify.png')
     st.sidebar.image(image)
+    
+    
+    button_style = f"""
+    <style>
+        /* Button style */
+        .stButton button {{
+            background-color: transparent !important;
+            color: #1DB954 !important;
+            border: 2px solid #1DB954 !important; /* Green border all the time */
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }}
+
+        /* Button hover style */
+        .stButton button:hover {{
+            background-color: #1DB954 !important; /* Green background on hover */
+            color: white !important; /* White text on hover */
+        }}
+    </style>
+    """
+
+    # Display the custom CSS style
+    st.markdown(button_style, unsafe_allow_html=True)
 
 
     try:
@@ -672,86 +600,97 @@ def main():
         playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
 
 
+
+    def get_spotify_auth():
+        # auth_manager = SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
+        #                             client_secret=SPOTIPY_CLIENT_SECRET,
+        #                             redirect_uri=SPOTIPY_REDIRECT_URI,
+        #                             scope="user-library-read")
+        # sp = spotipy.Spotify(auth_manager=auth_manager)
+        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+            client_id='2bdfeb8580304b9fb343ff8cc8744e76',
+            client_secret='73cbcc49de99490f821c2925c2b41419',
+            redirect_uri='https://spotifyanalyzertest.streamlit.app',  # Update the redirect_uri
+            scope='playlist-read-private',
+            show_dialog=True
+        ))
+        st.write(f'{sp}')
+        return sp
+
+
+    
+
     # NEW
     playlists_dict = {}
-    #c.spotify_login_and_fetch_playlists()
-    if st.sidebar.button("Login to Spotify"):
-        # Spotify API credentials
-        CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
-        CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
+    #if st.sidebar.button("Manage Spotify Account"):
+        #st.write("GOT HERE")
+        #sp = get_spotify_auth()
+        #st.write('hi how are ya')
+        #user_info = sp.current_user()
+        #st.write(f"Logged in as {user_info['display_name']}")
+        #st.session_state.sp = sp
+        #if sp:
+            #print('GOT HERE TO SP EXISTS')
+            #user_info = sp.current_user()
+            #print(f'I dont think i can get here')
+            #st.write(f"Logged in as {user_info['display_name']}")
+        #else:
+            #st.write('else executed')
         
-        # Authenticate the user with Spotify
-        st.session_state.sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
-                                                       CLIENT_SECRET,
-                                                       redirect_uri = st.secrets["SPOTIPY_REDIRECT_URI"],
-                                                       scope="user-library-read playlist-read-private",  # Scope for reading playlists
-                                                       show_dialog=True))
+        # Spotify API credentials
+        #CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
+        #CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
+        
+        # # Authenticate the user with Spotify
+        # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+        #     client_id='2bdfeb8580304b9fb343ff8cc8744e76',
+        #     client_secret='73cbcc49de99490f821c2925c2b41419',
+        #     redirect_uri='https://spotifyanalyzertest.streamlit.app/',  # Update the redirect_uri
+        #     scope='playlist-read-private',
+        #     show_dialog=True
+        # ))
+        # sp_oauth = SpotifyOAuth(
+        #     client_id=SPOTIPY_CLIENT_ID,
+        #     client_secret=SPOTIPY_CLIENT_SECRET,
+        #     redirect_uri=SPOTIPY_REDIRECT_URI,
+        #     scope='user-library-read'
+        # )
+        # auth_url = sp_oauth.get_authorize_url()
 
-        st.session_state.user = st.session_state.sp.current_user()
-        st.sidebar.success(f"Logged in as {st.session_state.user['display_name']}")
+        #KEEP
+        # user = sp.current_user()
+        # st.sidebar.success(f"Logged in as {user['display_name']}")
 
-        # Get the playlists of the authenticated user
-        st.session_state.playlists = st.session_state.sp.current_user_playlists()
+        # # Get the playlists of the authenticated user
+        # playlists = sp.current_user_playlists()
 
-        st.session_state.spotify_playlists = st.session_state.playlists['items']
+        # st.session_state.spotify_playlists = playlists['items']
 
-        # Iterate through the playlists and print their names and external URLs
-        #st.sidebar.subheader("Your Spotify Playlists:")
-        #for idx, playlist in enumerate(playlists['items']):
-            #st.sidebar.write(f"{idx + 1}. {playlist['name']}")
-            #st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
-        # END
-
-
-    #     # Print the contents of the session state variable
-    # if 'spotify_playlists' in st.session_state:
-    #     playlists = st.session_state.spotify_playlists
-    #     for idx, playlist in enumerate(playlists):
-    #         st.write(f"{idx + 1}. {playlist['name']}")
-    #         st.write(f"   External URL: {playlist['external_urls']['spotify']}")
-    # else:
-    #     st.write("No Spotify playlists available. Please log in to Spotify.")
+        # playlist_name = None
+        
 
     def generate_analysis(playlist):
         #print(f"button for {playlist['name']} hit")
-        st.session_state.playlist_name = st.session_state.playlist['external_urls']['spotify']
-        return st.session_state.playlist_name
+        playlist_name = playlist['external_urls']['spotify']
+        return playlist_name
         #st.sidebar.text(playlist_name)
         #p = c.Playlist(playlist_name)
         #c.run(p)
 
         # Print the contents of the session state variable and add a button for each playlist
     if 'spotify_playlists' in st.session_state:
-        st.session_state.playlists = st.session_state.spotify_playlists
-        for idx, st.session_state.playlist in enumerate(st.session_state.playlists):
-            st.sidebar.write(f"{idx + 1}. {st.session_state.playlist['name']}")
-            st.sidebar.write(f"   External URL: {st.session_state.playlist['external_urls']['spotify']}")
-            st.session_state.generate_button = st.sidebar.button(f"Generate Analysis for {st.session_state.playlist['name']}", key=f"generate_{idx}")
-            if st.session_state.generate_button:
+        playlists = st.session_state.spotify_playlists
+        for idx, playlist in enumerate(playlists):
+            st.sidebar.write(f"{idx + 1}. {playlist['name']}")
+            #st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
+            generate_button = st.sidebar.button(f"Generate Analysis for {playlist['name']}", key=f"generate_{idx}")
+            st.sidebar.markdown("<hr style='margin: 0px;'>", unsafe_allow_html=True)
+            if generate_button:
                 # Call a function to generate the analysis for the selected playlist
-                st.session_state.playlist_name = generate_analysis(playlist)
+                playlist_name = generate_analysis(playlist)
     else:
         #st.write("No Spotify playlists available. Please log in to Spotify.")
         pass
-
-
-
-
-
-    # st.title("Spotify Playlist Analyzer")
-
-    # # Load an image and display it in the Streamlit sidebar
-    # image = Image.open('Vibify.png')
-    # st.sidebar.image(image)
-
-    # Keep
-    # Create an input field in the sidebar for the Spotify playlist URL
-    #if st.sidebar.text_input("Enter the URL of the Spotify playlist:"):
-    # try:
-    #     playlist_name
-    # except NameError:
-    #     playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
-
 
 
     #playlist_name = c.display_page()
@@ -792,13 +731,15 @@ def main():
     st.markdown(loading_bar_style, unsafe_allow_html=True)
     loading_container = st.empty()
 
-
     if playlist_name:
         loading_container.markdown('<div class="loading-bar"><div></div></div>', unsafe_allow_html=True)
         # This is where you instantiate the class
-        p = Playlist(playlist_name)
-        flag = True
-        loading_container.empty()
+        try:
+            p = Playlist(playlist_name)
+            flag = True
+            loading_container.empty()
+        except:
+            st.sidebar.write('Invalid Link')
 
 
     # If we have a valid playlist ID, proceed to fetch and display playlist data
@@ -806,7 +747,8 @@ def main():
         #st.balloons(bg_color="green")
         st.balloons()  # Show celebration balloons in the app
         run(p)
-
+    cache_file = ".cache"
+    if os.path.exists(cache_file):
+        os.remove(cache_file)
 if __name__ == '__main__':
     main()
-
