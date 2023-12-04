@@ -681,7 +681,7 @@ def main():
         CLIENT_SECRET = 'a64ec813eaa24d19a42c694dbc61ba35'
         
         # Authenticate the user with Spotify
-        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(CLIENT_ID,
+        sp = spotipy.Spotify(auth_manager=spotipy.SpotifyOAuth(CLIENT_ID,
                                                        CLIENT_SECRET,
                                                        redirect_uri="http://localhost:8080/",
                                                        scope="playlist-read-private",  # Scope for reading playlists
