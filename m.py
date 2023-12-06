@@ -18,9 +18,6 @@ SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
 SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
 SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
 
-# Create a SpotifyOAuth instance
-#sp_oauth = SpotifyOAuth(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope='user-library-read')
-
 class Playlist:
     def __init__(self, playlist_name):
 
@@ -516,10 +513,12 @@ def display_mood_pi(p):
 
     #Showing the pie chart
     st.plotly_chart(fig)
-    
-# STOPPED HERE
+
+
 def display_top10_artists(p):
+    # This function is to display the top 10 artists in a nice bar chart
     artist_popularity = {}
+    # Loop over the track_info to get all the popularitites in a long list
     for track_info in p.track_info.values():
         artists = track_info['artist'].split(", ")
         for artist in artists:
@@ -527,13 +526,14 @@ def display_top10_artists(p):
                 artist_popularity[artist] += track_info['popularity']
             else:
                 artist_popularity[artist] = track_info['popularity']
-
+    # Get the one with the highest popularity
     max_popularity = max(artist_popularity.values())
+    # Turn the popularities into percentages
     artist_popularity = {artist: (popularity / max_popularity) * 100 for artist, popularity in
                          artist_popularity.items()}
-
+    # Sort the artists and the popularities
     sorted_artists = sorted(artist_popularity.items(), key=lambda x: x[1], reverse=True)[:10]
-
+    # Return them
     top_artists, top_popularity = zip(*sorted_artists)
 
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Top 10 Artists by Popularity</div>",unsafe_allow_html=True)
@@ -541,19 +541,22 @@ def display_top10_artists(p):
     fig = px.bar(df_top_artists, x='Popularity', y='Artist', orientation='h')
     fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                       marker_line_width=1.5, opacity=0.6)
+    # Display the information using plotly
     st.plotly_chart(fig)
 
 
 def display_top10_songs(p):
+    # Get the popularities of the songs from the dataframe
     max_popularity = p.df['Popularity'].max()
     p.df['Popularity'] = (p.df['Popularity'] / max_popularity) * 100
-
+    # Get the top 10 songs with the highest popularities
     top_songs = p.df.nlargest(10, 'Popularity')
 
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Top 10 Songs by Popularity</div>",unsafe_allow_html=True)
     fig = px.bar(top_songs[::-1], x='Popularity', y='Name', orientation='h')
     fig.update_traces(marker_color='rgb(255, 123, 127)', marker_line_color='rgb(165, 38, 42)',
                       marker_line_width=1.5, opacity=0.6)
+    # Display it using plotly in a bar chart
     st.plotly_chart(fig)
 
 
@@ -572,19 +575,19 @@ def run(p):
 
 # Real Main
 def main():
-    #print('RAN THIS')
-    # Spotify app credentials from your Spotify Developer Dashboard
+    # Spotify app credentials from your Spotify Developer Dashboard (store them in secrets)
     SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
     SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
     SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
-    
+
+    # Display the title
     st.title("Spotify Playlist Analyzer")
 
-    # Load an image and display it in the Streamlit sidebar
+    # Load the logo and display it in the sidebar
     image = Image.open('Vibify.png')
     st.sidebar.image(image)
     
-    
+    # Made a sweet looking button (that isn't even used)
     button_style = f"""
     <style>
         /* Button style */
@@ -602,18 +605,17 @@ def main():
         }}
     </style>
     """
-
     # Display the custom CSS style
     st.markdown(button_style, unsafe_allow_html=True)
 
-
+    # Check to see if the playlist name exists (if someone droped a link in the sidebar)
     try:
         playlist_name
     except NameError:
         playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
 
-
-
+"""
+    # Unused
     def get_spotify_auth():
         # auth_manager = SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
         #                             client_secret=SPOTIPY_CLIENT_SECRET,
@@ -629,12 +631,10 @@ def main():
         ))
         st.write(f'{sp}')
         return sp
-
-
     
 
     # NEW
-    playlists_dict = {}
+    #playlists_dict = {}
     #if st.sidebar.button("Manage Spotify Account"):
         #st.write("GOT HERE")
         #sp = get_spotify_auth()
@@ -680,7 +680,7 @@ def main():
         # st.session_state.spotify_playlists = playlists['items']
 
         # playlist_name = None
-        
+"""
 
     def generate_analysis(playlist):
         #print(f"button for {playlist['name']} hit")
@@ -689,7 +689,7 @@ def main():
         #st.sidebar.text(playlist_name)
         #p = c.Playlist(playlist_name)
         #c.run(p)
-
+"""
         # Print the contents of the session state variable and add a button for each playlist
     if 'spotify_playlists' in st.session_state:
         playlists = st.session_state.spotify_playlists
@@ -704,15 +704,14 @@ def main():
     else:
         #st.write("No Spotify playlists available. Please log in to Spotify.")
         pass
-
+"""
 
     #playlist_name = c.display_page()
     flag = False
 
     # Define the desired loading bar color (Spotify green)
     loading_bar_color = "#1DB954"
-
-    # Define the custom CSS style for the loading bar with the chosen color
+    # Made a sweet loading bar
     loading_bar_style = f"""
     <style>
     @keyframes loading {{
@@ -740,10 +739,11 @@ def main():
     </style>
     """
 
-    # Display the custom CSS style
+    # Display the loading bar when the project is loading
     st.markdown(loading_bar_style, unsafe_allow_html=True)
     loading_container = st.empty()
 
+    # Display the loading bar when a link is pasted into the bar
     if playlist_name:
         loading_container.markdown('<div class="loading-bar"><div></div></div>', unsafe_allow_html=True)
         # This is where you instantiate the class
@@ -757,9 +757,9 @@ def main():
 
     # If we have a valid playlist ID, proceed to fetch and display playlist data
     if flag:
-        #st.balloons(bg_color="green")
         st.balloons()  # Show celebration balloons in the app
         run(p)
+    # Remove cache after each run 
     cache_file = ".cache"
     if os.path.exists(cache_file):
         os.remove(cache_file)
