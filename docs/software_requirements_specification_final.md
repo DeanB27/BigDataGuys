@@ -23,7 +23,7 @@ The purpose of this software requirements document is to outline the requirement
    D1: The dashboard shall have a text box to paste a link to a specific Spotify playlist.    
    D2: Upon inputting a public playlist link, the dashboard shall display the user's playlist duration.    
    D3: Upon inputting a public playlist link, the dashboard shall display the user's playlist name.    
-   D4: Upon inputting a public playlist link, the dashboard shall display the user's playlist cover.
+   D4: Upon inputting a public playlist link, the dashboard shall display the user's playlist cover.  
    D5: Upon inputting a public playlist link, the dashboard will display a small window that contains the songs, artists, release dates, popularities, and durations of             every song in the playlist.    
 
 # Non-Functional Requirements
