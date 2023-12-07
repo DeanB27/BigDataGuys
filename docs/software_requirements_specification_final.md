@@ -20,14 +20,11 @@ The purpose of this software requirements document is to outline the requirement
    G5: The program shall use a plotly pie chart to show the percentages of each mood in the given playlist.  
 
 5. Streamlit Dashboard User Interface  
-   D1: The dashboard shall host a login button that prompts for user credentials.  
-   D2: The dashboard shall have a description of the Spotify playlist analyzer.  
-   D3: The dashboard shall have a text box to paste a link to a specific Spotify playlist.  
-   D4: The dashboard shall be accessible to the user in a web browser.  
-   D5: Upon logging in the dashboard shall display the user's playlists.  
-   D6: Upon logging in the dashboard shall display the user's playlist's durations.  
-   D7: Upon logging in the dashboard shall display the user's name.  
-   D8: Upon logging in the dashboard shall display the user's profile picture.  
+   D1: The dashboard shall have a text box to paste a link to a specific Spotify playlist.    
+   D2: Upon inputting a public playlist link, the dashboard shall display the user's playlist duration.    
+   D3: Upon inputting a public playlist link, the dashboard shall display the user's playlist name.    
+   D4: Upon inputting a public playlist link, the dashboard shall display the user's playlist cover.
+   D5: Upon inputting a public playlist link, the dashboard will display a small window that contains the songs, artists, release dates, popularities, and durations of             every song in the playlist.    
 
 # Non-Functional Requirements
 4. User-Friendly Interface   
