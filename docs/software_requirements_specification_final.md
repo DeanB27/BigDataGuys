@@ -6,11 +6,11 @@ The purpose of this software requirements document is to outline the requirement
    SA1: Upon inputting a public playlist link, the program shall pull the user's playlist name.  
    SA2: Upon inputting a public playlist link, the program shall pull the user's playlist cover.  
    SA3: Upon inputting a public playlist link, the program shall pull the user's playlist description.  
-   SA4: Upon inputting a public playlist link, the program shall pull the user's playlist track count. 
-   SA5: Upon inputting a public playlist link, the program shall pull the user's playlist duration. 
-   SA6: Upon inputting a public playlist link, the program shall pull the user's playlists tracks. 
-   SA7: Upon inputting a public playlist link, the program shall pull the user's playlist track artists. 
-   SA8: Upon inputting a public playlist link, the program shall pull the user's playlist track popularities.  
+   SA4: Upon inputting a public playlist link, the program shall pull the user's playlist track count.   
+   SA5: Upon inputting a public playlist link, the program shall pull the user's playlist duration.   
+   SA6: Upon inputting a public playlist link, the program shall pull the user's playlists tracks.   
+   SA7: Upon inputting a public playlist link, the program shall pull the user's playlist track artists.   
+   SA8: Upon inputting a public playlist link, the program shall pull the user's playlist track popularities.    
 
 3. Genre and Mood Metric Analysis  
    G1: The genre analysis shall list the percentages of each genre in your playlist.  
