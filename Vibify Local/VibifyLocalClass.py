@@ -12,7 +12,6 @@ import plotly.express as px
 from PIL import Image
 import re
 from spotipy.oauth2 import SpotifyOAuth
-import spotify_auth
 
 
 class Playlist:
