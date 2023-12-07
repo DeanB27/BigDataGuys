@@ -19,54 +19,22 @@ SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
 SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
 SPOTIPY_REDIRECT_URI = 'http://localhost:8080/'
 
-# Create a SpotifyOAuth instance
-#sp_oauth = SpotifyOAuth(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope='user-library-read')
-
 
 # Real Main
 def main():
-    # Spotify app credentials from your Spotify Developer Dashboard
+    # Spotify app credentials from the Spotify Developer Dashboard
     SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
     SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
     SPOTIPY_REDIRECT_URI = 'http://localhost:8080/'
 
     st.title("Spotify Playlist Analyzer")
 
-    # Load an image and display it in the Streamlit sidebar
+    # Loads the Vibify logo and displays it in the Streamlit sidebar
     image = Image.open('Vibify.png')
     st.sidebar.image(image)
 
 
-
-    # button_style = f"""
-    # <style>
-    #     /* Change the button border color to Spotify green */
-    #     .stButton button {{
-    #         border: 2px solid #1DB954 !important; /* Spotify green color */
-    #         background-color: transparent !important; /* Make the button transparent */
-    #         color: #1DB954 !important; /* Text color to Spotify green */
-    #     }}
-    # </style>
-    # """
-
-    # button_style = f"""
-    # <style>
-    #     /* Button style */
-    #     .stButton button {{
-    #         background-color: transparent !important;
-    #         color: #1DB954 !important;
-    #         border: 2px solid transparent !important;
-    #         transition: background-color 0.3s, border-color 0.3s, color 0.3s;
-    #     }}
-        
-    #     /* Button hover style */
-    #     .stButton button:hover {{
-    #         background-color: #1DB954 !important; /* Green background on hover */
-    #         border-color: #1DB954 !important; /* Green border on hover */
-    #         color: white !important; /* White text on hover */
-    #     }}
-    # </style>
-    # """
+    # Creates the green border style on the login and playlist buttons
     button_style = f"""
     <style>
         /* Button style */
@@ -105,10 +73,10 @@ def main():
         
         # Authenticate the user with Spotify
         sp = spotipy.Spotify(auth_manager=SpotifyOAuth(CLIENT_ID,
-                                                       CLIENT_SECRET,
-                                                       redirect_uri="http://localhost:8080/",
-                                                       scope="playlist-read-private",  # Scope for reading playlists
-                                                       show_dialog=True))
+                CLIENT_SECRET,
+                redirect_uri="http://localhost:8080/",
+                scope="playlist-read-private",  # Scope for reading playlists
+                show_dialog=True))
 
         user = sp.current_user()
         st.sidebar.success(f"Logged in as {user['display_name']}")
@@ -121,49 +89,12 @@ def main():
         playlist_name = None
 
 
-    # try:
-    #     playlist_name
-    # except NameError:
-    #     playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
-
-
-
-
-
-
-    # if st.sidebar.button("Log Out"):
-    #     cache_file = ".cache"
-    #     if os.path.exists(cache_file):
-    #         os.remove(cache_file)
-    #     st.session_state.spotify_playlists = None
-
-
-        # Iterate through the playlists and print their names and external URLs
-        #st.sidebar.subheader("Your Spotify Playlists:")
-        #for idx, playlist in enumerate(playlists['items']):
-            #st.sidebar.write(f"{idx + 1}. {playlist['name']}")
-            #st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
-        # END
-
-
-    #     # Print the contents of the session state variable
-    # if 'spotify_playlists' in st.session_state:
-    #     playlists = st.session_state.spotify_playlists
-    #     for idx, playlist in enumerate(playlists):
-    #         st.write(f"{idx + 1}. {playlist['name']}")
-    #         st.write(f"   External URL: {playlist['external_urls']['spotify']}")
-    # else:
-    #     st.write("No Spotify playlists available. Please log in to Spotify.")
-
+    # Method to pull the playlist
     def generate_analysis(playlist):
-        #print(f"button for {playlist['name']} hit")
         playlist_name = playlist['external_urls']['spotify']
         return playlist_name
-        #st.sidebar.text(playlist_name)
-        #p = c.Playlist(playlist_name)
-        #c.run(p)
 
-        # Print the contents of the session state variable and add a button for each playlist
+    # Print the contents of the session state variable and add a button for each playlist
     if 'spotify_playlists' in st.session_state:
         playlists = st.session_state.spotify_playlists
         for idx, playlist in enumerate(playlists):
@@ -175,30 +106,8 @@ def main():
                 # Call a function to generate the analysis for the selected playlist
                 playlist_name = generate_analysis(playlist)
     else:
-        #st.write("No Spotify playlists available. Please log in to Spotify.")
         pass
 
-
-
-
-
-    # st.title("Spotify Playlist Analyzer")
-
-    # # Load an image and display it in the Streamlit sidebar
-    # image = Image.open('Vibify.png')
-    # st.sidebar.image(image)
-
-    # Keep
-    # Create an input field in the sidebar for the Spotify playlist URL
-    #if st.sidebar.text_input("Enter the URL of the Spotify playlist:"):
-    # try:
-    #     playlist_name
-    # except NameError:
-    #     playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
-
-
-
-    #playlist_name = c.display_page()
     flag = False
 
     # Define the desired loading bar color (Spotify green)
@@ -237,9 +146,9 @@ def main():
     loading_container = st.empty()
 
 
+    # Instantiate the Playlist class
     if playlist_name:
         loading_container.markdown('<div class="loading-bar"><div></div></div>', unsafe_allow_html=True)
-        # This is where you instantiate the class
         p = c.Playlist(playlist_name)
         flag = True
         loading_container.empty()
@@ -247,11 +156,11 @@ def main():
 
     # If we have a valid playlist ID, proceed to fetch and display playlist data
     if flag:
-        #st.balloons(bg_color="green")
         st.balloons()  # Show celebration balloons in the app
         c.run(p)
     cache_file = ".cache"
     if os.path.exists(cache_file):
         os.remove(cache_file)
+
 if __name__ == '__main__':
     main()

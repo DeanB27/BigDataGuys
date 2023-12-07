@@ -18,21 +18,19 @@ import spotify_auth
 class Playlist:
     def __init__(self, playlist_name):
 
-        # Your Spotify API credentials (note: it's not secure to include your credentials in the code)
-        # client_id = '8cfa81fbc4074f3aad32716a36044864'
-        # client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
+        # Your Spotify API credentials
         client_id = '2bdfeb8580304b9fb343ff8cc8744e76'
         client_secret = '73cbcc49de99490f821c2925c2b41419'
         # Set up the Spotify client credentials manager and Spotipy client
         client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
+        # Begin to initialize the playlist info/items
         self._url_type, self._playlist_id = Playlist.id_from_url(playlist_name)  # done
         self._playlist = sp.playlist(self._playlist_id)  # done
         self._playlist_name = self._playlist['name']  # done
         self._playlist_image = self._playlist['images'][0]['url']  # done
         self._playlist_desc = self._playlist['description']  # done
-        # self._broad_track_info = self._playlist['tracks']['items']
         self._broad_track_info = []
         results = sp.playlist_tracks(self._playlist_id)
         while results:
@@ -42,6 +40,7 @@ class Playlist:
             else:
                 break
 
+        # Begin to pull the track info from the playlist
         Playlist.set_track_info(self)
         self._tracks = [i for i in self.track_info]
         self._artists = [i['artist'] for i in self.track_info.values()]
@@ -51,19 +50,19 @@ class Playlist:
         self._albums = [i['album'] for i in self.track_info.values()]
         self._release_dates = [i['release date'] for i in self.track_info.values()]
 
-        # NEW
+        # Formats the time given from ms to minutes and seconds for readability
         self._track_durations_formatted = []
         for duration_ms in self._durations:
             duration_seconds = duration_ms / 1000
             minutes = duration_seconds // 60
             seconds = duration_seconds % 60
-            formatted_duration = f"{int(minutes)}:{int(seconds):02d}"  # Format seconds to have leading zero if < 10
+            formatted_duration = f"{int(minutes)}:{int(seconds):02d}"
             self._track_durations_formatted.append(formatted_duration)
 
-        # END
         self.fetch_audio_features(sp)
         self.set_mood_ratings()
 
+        # Set the dataframe and info given based off of the playlist submitted
         Playlist.set_df(self)
         Playlist.set_recommendations(self, sp)
         Playlist.fetch_genres(self, sp)
@@ -79,6 +78,7 @@ class Playlist:
         except AttributeError:
             st.error("Invalid URL")  # Display an error message in the Streamlit app if the URL is invalid
 
+    # Properties for playlist items
     @property
     def playlist_id(self):
         return self._playlist_id
@@ -103,9 +103,9 @@ class Playlist:
     def broad_track_info(self):
         return self._broad_track_info
 
+    # Create a dictionary given the track info
     def set_track_info(self):
         self._track_info = {}
-        # print(self._track_info)
         for track in self._broad_track_info:
             self._track_info.update({track["track"]["name"]: {
                 'artist': (", ".join([artist["name"] for artist in track["track"]["artists"]])),
@@ -114,8 +114,8 @@ class Playlist:
                 'album': track["track"]["album"]["name"],
                 'release date': track["track"]["album"]["release_date"]
             }})
-        # print(self._track_info)
 
+    # Properties for the track info
     @property
     def track_info(self):
         return self._track_info
@@ -148,6 +148,7 @@ class Playlist:
     def track_durations_formatted(self):
         return self._track_durations_formatted
 
+    # Creates and sets the dataframe given all of the track information
     def set_df(self):
         # Numeric and formatted durations
         numeric_durations = [duration_ms / 60000 for duration_ms in self._durations]  # Duration in minutes
@@ -158,6 +159,7 @@ class Playlist:
             formatted_duration = f"{minutes}m {seconds}s"
             formatted_durations.append(formatted_duration)
 
+        # Categorizes the tracks based on their popularity
         popularity_ranges = pd.cut(self._popularities, bins=[-1, 30, 60, 101],
                                    labels=['Hidden Gems (0-30%)', 'Common (30-60%)', 'Popular (60-100%)'])
 
@@ -174,38 +176,13 @@ class Playlist:
 
         self._df = pd.DataFrame(data)
 
-    # def set_df(self):
-    # # Numeric and formatted durations
-    #     numeric_durations = [duration_ms / 60000 for duration_ms in self._durations]  # Duration in minutes
-    #     formatted_durations = []
-    #     for duration_ms in self._durations:
-    #         minutes = duration_ms // 60000
-    #         seconds = (duration_ms % 60000) // 1000
-    #         formatted_duration = f"{minutes}m {seconds}s"
-    #         formatted_durations.append(formatted_duration)
-
-    #     data = {
-    #         "Name": self.tracks,
-    #         "Artist": self.artists,
-    #         "Album": self.albums,
-    #         "Release Date": self.release_dates,
-    #         "Popularity": self.popularities,
-    #         "Duration (min)": numeric_durations,  # Numeric duration for sorting and plotting
-    #         "Duration": formatted_durations  # Formatted duration for display
-    #     }
-
-    #     self._df = pd.DataFrame(data)
-
+    # Property for the data frame
     @property
     def df(self):
         return self._df
 
-    # def set_recommendations(self, sp):
-    #     # Get track URI and fetch recommendations from Spotify
-    #     results = sp.search(q=self.playlist, type='track')
-    #     track_uri = results['tracks']['items'][0]['uri']
-    #     self._recommendations = sp.recommendations(seed_tracks=[track_uri], limit=20)['tracks']
 
+    # Gets the URI of the tracks in the playlist
     def get_track_uris(self, sp):
         # Assume self.playlist is a dictionary containing the playlist ID
         playlist_id = self.playlist.get('id')
@@ -243,44 +220,7 @@ class Playlist:
     def recommendations(self):
         return self._recommendations
 
-    # def fetch_genres(self, sp):
-    #     self._genres = {}
-    #     for track in self._broad_track_info:
-    #         for artist in track["track"]["artists"]:
-    #             artist_id = artist["id"]
-    #             if artist_id not in self._genres:
-    #                 artist_info = sp.artist(artist_id)
-    #                 self._genres[artist_id] = {
-    #                     'name': artist_info['name'],
-    #                     'genres': artist_info['genres']
-    #                 }
-
-    # def fetch_genres(self, sp):
-    #     self._genres = {}  # to store artist's genres
-    #     genre_count = {}
-    #     total_tracks = 0
-
-    #     for track in self._broad_track_info:
-    #         total_tracks += 1
-    #         artist_genres = set()  # To avoid counting the same genre multiple times for one track
-    #         for artist in track["track"]["artists"]:
-    #             artist_id = artist["id"]
-    #             if artist_id not in self._genres:  # Cache the artist's genres to avoid repeated API calls
-    #                 artist_info = sp.artist(artist_id)
-    #                 self._genres[artist_id] = {
-    #                     'name': artist_info['name'],
-    #                     'genres': artist_info['genres']
-    #                 }
-    #             for genre in self._genres[artist_id]['genres']:
-    #                 artist_genres.add(genre)
-
-    #         for genre in artist_genres:
-    #             genre_count[genre] = genre_count.get(genre, 0) + 1
-
-    #     # Calculate the percentage of each genre
-    #     self._genre_percentages = {genre: (count / total_tracks) * 100 for genre, count in genre_count.items()}
-
-    # THIS WORKS
+    # Gathers the genres of each track in the playlist
     def fetch_genres(self, sp):
         genre_count = {}
         total_tracks = len(self._broad_track_info)
@@ -296,6 +236,7 @@ class Playlist:
                         'name': artist_info['name'],
                         'genres': artist_info['genres']
                     }
+                # Sorts the genres into a more generalized list based on key words
                 for genre in self._genres[artist_id]['genres']:
 
                     if 'country' in genre:
@@ -386,41 +327,8 @@ class Playlist:
         mood_percentages = {mood: (count / total_tracks) * 100 for mood, count in mood_counts.items()}
         return mood_percentages
 
-
-# def display_page():
-#     SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
-#     SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
-#     SPOTIPY_REDIRECT_URI = 'http://localhost:8080/'
-    
-# #     # Keep
-#     # Set up the Streamlit app title
-#     st.title("Spotify Playlist Analyzer")
-
-#     # Load an image and display it in the Streamlit sidebar
-#     image = Image.open('Vibify.png')
-#     st.sidebar.image(image)
-
-#     # Keep
-#     # Create an input field in the sidebar for the Spotify playlist URL
-#     #if st.sidebar.text_input("Enter the URL of the Spotify playlist:"):
-#     playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
-#     return playlist_name
-
-
+# Displays the playlist info
 def display_playlist_info(p: Playlist):
-    # # Display the playlist information and cover image
-    # st.write(f"## {p.playlist_name}")
-    # st.image(p.playlist_image, width=250)
-    # st.write(f"Description: {p.playlist_desc}")
-    # st.write(f"Number of tracks: {len(p.track_info)}")
-    # st.write("### Tracklist")
-
-    # Display the playlist information and cover image
-    # st.markdown(f"# {p.playlist_name}")
-    # st.image(p.playlist_image, width=250)
-    # st.markdown(f"**Description:** {p.playlist_desc}")
-    # st.markdown(f"**Number of tracks:** {len(p.track_info)}")
-    # st.markdown("## Tracklist")
 
     total_duration_hours = (p._combined_durations) // (1000 * 60 * 60)
     remaining_ms = p._combined_durations % (1000 * 60 * 60)
@@ -431,7 +339,7 @@ def display_playlist_info(p: Playlist):
     # Create two columns for layout
     col1, _, col2, _ = st.columns([1, 1, 2, 1])
 
-    # Display the playlist cover and title in the left column
+    # Display the playlist cover in the left column
     with col1:
         st.image(p.playlist_image, width=250)
     # Display the rest of the information on the right column
@@ -443,7 +351,7 @@ def display_playlist_info(p: Playlist):
         st.markdown(f"<div class='bubble'>Total Time: {total_duration_hours} hours {remaining_minutes} minutes</div>",
                     unsafe_allow_html=True)
 
-    # Use CSS to style text bubbles
+    # Use CSS to create text bubbles
     st.markdown(
         """
         <style>
@@ -458,7 +366,7 @@ def display_playlist_info(p: Playlist):
         unsafe_allow_html=True
     )
 
-    # Display the interactive table
+    # Display the dataframe table
     st.markdown("<div style='font-size: 24px; text-align: center;'><div class='bubble'>Tracklist</div></div>",
                 unsafe_allow_html=True)
     st.dataframe(p.df)
@@ -482,7 +390,7 @@ def display_pop_chart(p):
 
 
 def display_bivariate_analysis(p):
-    # Set up bivariate analysis with dropdown options for x and y variables
+    # Set up bivariate analysis with dropdown options for duration vs popularity
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Bivariate Analysis</div>",
                 unsafe_allow_html=True)
     x_axis = "Duration (min)"
@@ -503,14 +411,7 @@ def display_multivariate_analysis(p):
     st.plotly_chart(fig_multivariate)
 
 
-# def display_playlist_summary(p):
-#     # Provide a summary of the playlist, showing the most and least popular tracks
-#     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Playlist Summary</div>",unsafe_allow_html=True)
-#     st.write(
-#         f"**Most popular track:** {p.df.iloc[p.df['Popularity'].idxmax()]['Name']} by {p.df.iloc[p.df['Popularity'].idxmax()]['Artist']} ({p.df['Popularity'].max()} popularity)")
-#     st.write(
-#         f"**Least popular track:** {p.df.iloc[p.df['Popularity'].idxmin()]['Name']} by {p.df.iloc[p.df['Popularity'].idxmin()]['Artist']} ({p.df['Popularity'].min()} popularity)")
-
+# Create a playlist summary of the tracks
 def display_playlist_summary(p):
     # Convert the 'Popularity' column to numeric type
     p.df['Popularity'] = pd.to_numeric(p.df['Popularity'], errors='coerce')
@@ -528,24 +429,12 @@ def display_playlist_summary(p):
         f"Least popular track: {least_popular_track['Name']} by {least_popular_track['Artist']} ({least_popular_track['Popularity']} popularity)"
     )
 
-# def display_recommendations(p):
-#     st.write("Recommended songs:")
-#
-#     for track in p.recommendations:
-#         # Display the song name
-#         st.write(track['name'])
-#
-#         # Create a clickable link to the Spotify song
-#         spotify_url = track['external_urls']['spotify']
-#         st.markdown(f"[Listen on Spotify]({spotify_url})")
-#
-#         # Display the image
-#         st.image(track['album']['images'][0]['url'], width=120)
 
+# Create the list of the recommended songs given the playlist
 def display_recommendations(p):
     st.write("Recommended songs:")
 
-    # Set the width and spacing for each column (adjust as needed)
+    # Set the width and spacing for each column
     col_width = 300
     spacing = 20
 
@@ -562,20 +451,21 @@ def display_recommendations(p):
             if i + 1 < len(p.recommendations):
                 display_song(p.recommendations[i + 1], col_width, spacing)
 
+# Creates the recommended songs to be displayed
 def display_song(track, col_width, spacing):
-    # Display the song cover as a clickable image with custom HTML and CSS
+    # Display the song cover as a clickable image
     spotify_url = track['external_urls']['spotify']
     image_html = f'<a href="{spotify_url}" target="_blank"><img src="{track["album"]["images"][0]["url"]}" width="{col_width - spacing}" style="cursor:pointer;"></a>'
     st.write(f'{image_html}', unsafe_allow_html=True)
 
-    # Display the wrapped song title starting from the left
+    # Format the song title
     st.markdown(
         f"<p style='word-wrap: break-word;'>{track['name']} - {track['artists'][0]['name']}</p>",
         unsafe_allow_html=True
     )
 
 
-
+# Create a pie chart of the playlist genres
 def display_genre_pi(p):
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Genre Percentages</div>",unsafe_allow_html=True)
     # Creating a pie chart
@@ -588,6 +478,7 @@ def display_genre_pi(p):
     st.plotly_chart(fig)
 
 
+# Create a pie chart of the playlist moods
 def display_mood_pi(p):
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Mood Percentages</div>",unsafe_allow_html=True)
     percentages = p.calculate_mood_percentages()
@@ -600,16 +491,21 @@ def display_mood_pi(p):
     #Showing the pie chart
     st.plotly_chart(fig)
 
+
+# Create a list of the top ten artists based on their popularity
 def display_top10_artists(p):
     artist_popularity = {}
+    # Loop through track info
     for track_info in p.track_info.values():
         artists = track_info['artist'].split(", ")
+        # Loop through artists
         for artist in artists:
             if artist in artist_popularity:
                 artist_popularity[artist] += track_info['popularity']
             else:
                 artist_popularity[artist] = track_info['popularity']
 
+    # Sort by artist popularity
     max_popularity = max(artist_popularity.values())
     artist_popularity = {artist: (popularity / max_popularity) * 100 for artist, popularity in
                          artist_popularity.items()}
@@ -618,6 +514,7 @@ def display_top10_artists(p):
 
     top_artists, top_popularity = zip(*sorted_artists)
 
+    # Create the display of the top artists
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Top 10 Artists by Popularity</div>",unsafe_allow_html=True)
     df_top_artists = pd.DataFrame({'Artist': top_artists[::-1], 'Popularity': top_popularity[::-1]})
     fig = px.bar(df_top_artists, x='Popularity', y='Artist', orientation='h')
@@ -626,12 +523,14 @@ def display_top10_artists(p):
     st.plotly_chart(fig)
 
 
+# Create a list of the top ten songs based on their popularity
 def display_top10_songs(p):
     max_popularity = p.df['Popularity'].max()
     p.df['Popularity'] = (p.df['Popularity'] / max_popularity) * 100
 
     top_songs = p.df.nlargest(10, 'Popularity')
 
+    # Create a display of the top songs
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Top 10 Songs by Popularity</div>",unsafe_allow_html=True)
     fig = px.bar(top_songs[::-1], x='Popularity', y='Name', orientation='h')
     fig.update_traces(marker_color='rgb(255, 123, 127)', marker_line_color='rgb(165, 38, 42)',
@@ -639,12 +538,13 @@ def display_top10_songs(p):
     st.plotly_chart(fig)
 
 
+# Method to run all of playlist analyzer functions
 def run(p):
     display_playlist_info(p)
     display_playlist_summary(p)
     display_pop_chart(p)
     display_bivariate_analysis(p)
-    #display_multivariate_analysis(p)
+    #display_multivariate_analysis(p) Is no longer used
     display_genre_pi(p)
     display_mood_pi(p)
     display_top10_artists(p)
