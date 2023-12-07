@@ -14,7 +14,7 @@ The purpose of this software requirements document is to outline the requirement
 
 3. Genre and Mood Metric Analysis  
    G1: The program shall list the percentages of each genre in the given playlist.  
-   G2: The program shall use a plotly pie chart to show the percentages of each genre in the given playlist.
+   G2: The program shall use a plotly pie chart to show the percentages of each genre in the given playlist.  
    G3: The program shall filter for the genres: country, rock, rap, pop, hip-hop, jazz, soul, metal, funk, indie, techno, dubstep, alternative, folk, and consider all other        genres as "other."  
    G4: The program shall list a mood metric of your playlist, showing the percentage of each mood.
    G5: The program shall use a plotly pie chart to show the percentages of each mood in the given playlist.  
