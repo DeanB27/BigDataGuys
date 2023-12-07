@@ -1,5 +1,5 @@
 # Overview
-The purpose of this software requirements document is to outline the requirements that our program must adhere to. These include functionality features and backend features. The main requirments outlined include the dashboard requirements, and analysis requirements, accessibility requirements, as well as API connectivity requirements.  
+The purpose of this software requirements document is to outline the requirements that our program must adhere to. These include functionality features and backend features. The main requirments outlined include the dashboard requirements, analysis requirements, accessibility requirements, as well as API connectivity requirements.  
 
 # Functional Requirements
 1. Spotify API Connectivity  
