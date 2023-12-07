@@ -31,22 +31,22 @@ The purpose of this software requirements document is to outline the requirement
 
 # Non-Functional Requirements
 4. User-Friendly Interface   
-   UI1: The dashboard shall load using any and all type's of web brower.  
+   UI1: The dashboard shall load using any and all type's of web brower.    
    UI2: The dashboard shall reformat to fit any screen size. 
    UI3: The website shall allow unlimited attempts to correctly input user playlist link.
    UI4: The website shall redirect the user to the Spotify website when clicking a recommended song on a computer.  
    UI5: The website shall redirect the user to the Spotify app when clicking a recommended song on a mobile device.   
 
 5. User Availability  
-   UA1: The website shall be usable all hours of everyday.
-   UA2: The website shall work with any public Spotify playlist with 1000 songs or less.
+   UA1: The website shall be usable all hours of everyday.  
+   UA2: The website shall work with any public Spotify playlist with 1000 songs or less.  
    UA3: The website shall clear the cache after being closed.  
    UA4: The website shall reformat when loaded on a mobile device.  
    UA5: The website shall have a short domain name with the title "vibify" in it.  
     
 6. API Functionality  
    AP1: The website shall grab the user's data in realtime every login instance.  
-   AP2: The website shall grab the user's playlist data in realtime every playlist link analysis.
-   AP3: The website shall only have one page with a top-down view of the analysis.
-   AP4: The website shall seamlessly switch between playlists as they are inputted, without reloading the webpage.  
+   AP2: The website shall grab the user's playlist data in realtime every playlist link analysis.  
+   AP3: The website shall only have one page with a top-down view of the analysis.  
+   AP4: The website shall seamlessly switch between playlists as they are inputted, without reloading the webpage.    
    AP5: The website shall take no longer than 15 seconds to load the analysis per one hundred songs in the playlist.  
