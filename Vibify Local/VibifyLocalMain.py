@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.express as px
 from PIL import Image
 import re
-import c
+import VibifyLocalClass as c
 import time
 from spotipy.oauth2 import SpotifyOAuth
 import os
