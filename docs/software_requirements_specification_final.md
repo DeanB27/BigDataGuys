@@ -32,8 +32,8 @@ The purpose of this software requirements document is to outline the requirement
 # Non-Functional Requirements
 4. User-Friendly Interface   
    UI1: The dashboard shall load using any and all type's of web brower.    
-   UI2: The dashboard shall reformat to fit any screen size. 
-   UI3: The website shall allow unlimited attempts to correctly input user playlist link.
+   UI2: The dashboard shall reformat to fit any screen size.   
+   UI3: The website shall allow unlimited attempts to correctly input user playlist link.  
    UI4: The website shall redirect the user to the Spotify website when clicking a recommended song on a computer.  
    UI5: The website shall redirect the user to the Spotify app when clicking a recommended song on a mobile device.   
 
