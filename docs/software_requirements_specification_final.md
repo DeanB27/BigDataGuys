@@ -3,18 +3,22 @@ The purpose of this software requirements document is to outline the requirement
 
 # Functional Requirements
 1. Spotify API Connectivity  
-   SA1: Upon logging in, the program shall pull the user's playlists.  
-   SA2: Upon logging in, the program shall pull the user's playlist duration.  
-   SA3: Upon logging in, the program shall pull the user's name.  
-   SA4: Upon logging in, the program shall pull the user's profile picture.  
+   SA1: Upon inputting a public playlist link, the program shall pull the user's playlist name.  
+   SA2: Upon inputting a public playlist link, the program shall pull the user's playlist cover. 
+   SA3: Upon inputting a public playlist link, the program shall pull the user's playlist description. 
+   SA4: Upon inputting a public playlist link, the program shall pull the user's playlist track count.
+   SA5: Upon inputting a public playlist link, the program shall pull the user's playlist duration.
+   SA6: Upon inputting a public playlist link, the program shall pull the user's playlists tracks.
+   SA7: Upon inputting a public playlist link, the program shall pull the user's playlist track artists.
+   SA8: Upon inputting a public playlist link, the program shall pull the user's playlist track popularities. 
 
-2. Genre and Mood Metric Analysis  
+3. Genre and Mood Metric Analysis  
    G1: The genre analysis shall list the percentages of each genre in your playlist.  
    G2: The genre analysis shall list graphs next to the percentages of each genre using the python package plotly.  
    G3: The genre analysis shall list the mood metric of your playlist with a descriptive adjective, such as happy or sad.  
    G4: The genre analysis will do the standard deviation to calculate variability of the mood metric rating.  
 
-3. Streamlit Dashboard User Interface  
+4. Streamlit Dashboard User Interface  
    D1: The dashboard shall host a login button that prompts for user credentials.  
    D2: The dashboard shall have a description of the Spotify playlist analyzer.  
    D3: The dashboard shall have a text box to paste a link to a specific Spotify playlist.  
