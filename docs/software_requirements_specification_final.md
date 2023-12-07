@@ -8,17 +8,18 @@ The purpose of this software requirements document is to outline the requirement
    SA3: Upon inputting a public playlist link, the program shall pull the user's playlist description.  
    SA4: Upon inputting a public playlist link, the program shall pull the user's playlist track count.   
    SA5: Upon inputting a public playlist link, the program shall pull the user's playlist duration.   
-   SA6: Upon inputting a public playlist link, the program shall pull the user's playlists tracks.   
+   SA6: Upon inputting a public playlist link, the program shall pull the user's playlist tracks.   
    SA7: Upon inputting a public playlist link, the program shall pull the user's playlist track artists.   
    SA8: Upon inputting a public playlist link, the program shall pull the user's playlist track popularities.    
 
 3. Genre and Mood Metric Analysis  
-   G1: The genre analysis shall list the percentages of each genre in your playlist.  
-   G2: The genre analysis shall list graphs next to the percentages of each genre using the python package plotly.  
-   G3: The genre analysis shall list the mood metric of your playlist with a descriptive adjective, such as happy or sad.  
-   G4: The genre analysis will do the standard deviation to calculate variability of the mood metric rating.  
+   G1: The program shall list the percentages of each genre in the given playlist.  
+   G2: The program shall use a plotly pie chart to show the percentages of each genre in the given playlist.
+   G3: The program shall filter for the genres: country, rock, rap, pop, hip-hop, jazz, soul, metal, funk, indie, techno, dubstep, alternative, folk, and consider all other        genres as "other."  
+   G4: The program shall list a mood metric of your playlist, showing the percentage of each mood.
+   G5: The program shall use a plotly pie chart to show the percentages of each mood in the given playlist.  
 
-4. Streamlit Dashboard User Interface  
+5. Streamlit Dashboard User Interface  
    D1: The dashboard shall host a login button that prompts for user credentials.  
    D2: The dashboard shall have a description of the Spotify playlist analyzer.  
    D3: The dashboard shall have a text box to paste a link to a specific Spotify playlist.  
