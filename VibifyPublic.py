@@ -9,30 +9,28 @@ import pandas as pd
 import plotly.express as px
 from PIL import Image
 import re
+#import c
 import time
 from spotipy.oauth2 import SpotifyOAuth
 import os
+#from flask import Flask, request
 
-# Spotify app credentials from your Spotify Developer Dashboard (remember to save these as secrets)
-SPOTIPY_CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
-SPOTIPY_CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
-SPOTIPY_REDIRECT_URI = st.secrets["SPOTIPY_REDIRECT_URI"]
+# Spotify app credentials from your Spotify Developer Dashboard
+
+SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
+
+# Create a SpotifyOAuth instance
+#sp_oauth = SpotifyOAuth(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope='user-library-read')
 
 class Playlist:
     def __init__(self, playlist_name):
 
         # Your Spotify API credentials (note: it's not secure to include your credentials in the code)
-        # client_id = '8cfa81fbc4074f3aad32716a36044864'
-        # client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
-        client_id = st.secrets["SPOTIPY_CLIENT_ID"]
-        client_secret = st.secrets["SPOTIPY_CLIENT_SECRET"]
-        
         # Set up the Spotify client credentials manager and Spotipy client
-        client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+        client_credentials_manager = SpotifyClientCredentials(client_id=st.secrets['SPOTIPY_CLIENT_ID'], client_secret=st.secrets['SPOTIPY_CLIENT_SECRET'])
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-        # Get the playlist id, playlist name, image, description, and "broad track info" to hold it
-        self._url_type, self._playlist_id = Playlist.id_from_url(playlist_name)
+        self._url_type, self._playlist_id = Playlist.id_from_url(playlist_name)  # done
         self._playlist = sp.playlist(self._playlist_id)  # done
         self._playlist_name = self._playlist['name']  # done
         self._playlist_image = self._playlist['images'][0]['url']  # done
@@ -47,8 +45,6 @@ class Playlist:
             else:
                 break
 
-        # Get all the specific tracks, artists, popularities, durations, combined duration, albums,
-        # formatted durations, and release dates of all the tracks in the playlist
         Playlist.set_track_info(self)
         self._tracks = [i for i in self.track_info]
         self._artists = [i['artist'] for i in self.track_info.values()]
@@ -57,27 +53,23 @@ class Playlist:
         self._combined_durations = sum(self.durations)
         self._albums = [i['album'] for i in self.track_info.values()]
         self._release_dates = [i['release date'] for i in self.track_info.values()]
-        
-        self.set_formatted_durations(self)
-        # 
-        # self._track_durations_formatted = []
-        # for duration_ms in self._durations:
-        #     duration_seconds = duration_ms / 1000
-        #     minutes = duration_seconds // 60
-        #     seconds = duration_seconds % 60
-        #     formatted_duration = f"{int(minutes)}:{int(seconds):02d}"  # Format seconds to have leading zero if < 10
-        #     self._track_durations_formatted.append(formatted_duration)
+
+        # NEW
+        self._track_durations_formatted = []
+        for duration_ms in self._durations:
+            duration_seconds = duration_ms / 1000
+            minutes = duration_seconds // 60
+            seconds = duration_seconds % 60
+            formatted_duration = f"{int(minutes)}:{int(seconds):02d}"  # Format seconds to have leading zero if < 10
+            self._track_durations_formatted.append(formatted_duration)
 
         # END
-        
-        # This gets the audio features of the tracks and sets their mood ratings,
-        # puts the info in a dataframe, and gets the reccommendations and genres
         self.fetch_audio_features(sp)
         self.set_mood_ratings()
+
         Playlist.set_df(self)
         Playlist.set_recommendations(self, sp)
         Playlist.fetch_genres(self, sp)
-        
 
     # Function to extract the ID and type (e.g., playlist, track) from a Spotify URL using regex
     @staticmethod
@@ -90,7 +82,6 @@ class Playlist:
         except AttributeError:
             st.error("Invalid URL")  # Display an error message in the Streamlit app if the URL is invalid
 
-    # Properties for all the playlist variables
     @property
     def playlist_id(self):
         return self._playlist_id
@@ -114,10 +105,10 @@ class Playlist:
     @property
     def broad_track_info(self):
         return self._broad_track_info
-        
-    # Function that sets all the basic track info into one variable
+
     def set_track_info(self):
         self._track_info = {}
+        # print(self._track_info)
         for track in self._broad_track_info:
             self._track_info.update({track["track"]["name"]: {
                 'artist': (", ".join([artist["name"] for artist in track["track"]["artists"]])),
@@ -126,6 +117,7 @@ class Playlist:
                 'album': track["track"]["album"]["name"],
                 'release date': track["track"]["album"]["release_date"]
             }})
+        # print(self._track_info)
 
     @property
     def track_info(self):
@@ -159,7 +151,6 @@ class Playlist:
     def track_durations_formatted(self):
         return self._track_durations_formatted
 
-    # A function to make the dataframe using pandas
     def set_df(self):
         # Numeric and formatted durations
         numeric_durations = [duration_ms / 60000 for duration_ms in self._durations]  # Duration in minutes
@@ -172,8 +163,7 @@ class Playlist:
 
         popularity_ranges = pd.cut(self._popularities, bins=[-1, 30, 60, 101],
                                    labels=['Hidden Gems (0-30%)', 'Common (30-60%)', 'Popular (60-100%)'])
-        
-        # These are parallel lists that will be used for creating charts using plotly
+
         data = {
             "Name": self.tracks,
             "Artist": self.artists,
@@ -208,18 +198,17 @@ class Playlist:
             print("No playlist ID found.")
             return []
 
-    # Sets the reccommendations based on the spotify playlist the user provided
     def set_recommendations(self, sp, limit=20):
         # Get track URIs from the playlist
         playlist_tracks = self.get_track_uris(sp)
 
         # Fetch recommendations from Spotify using multiple seed tracks
         if playlist_tracks:
-            # Use a few different tracks as seeds for diversity in the reccs
+            # Use multiple tracks as seeds for diversity
             seed_tracks = playlist_tracks[:min(5, len(playlist_tracks))]
             recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=limit)['tracks']
 
-            # Update the recommendations variable
+            # Update the recommendations attribute
             self._recommendations = recommendations
         else:
             print(f"No tracks found in the playlist. Unable to fetch recommendations.")
@@ -229,25 +218,24 @@ class Playlist:
         return self._recommendations
 
     
+    # THIS WORKS
     def fetch_genres(self, sp):
         genre_count = {}
         total_tracks = len(self._broad_track_info)
         self._genres = {}
 
-        # Loops over the tracks and creates a set to hold only unique genres
         for track in self._broad_track_info:
             artist_genres = set()  # Collect all unique genres for this track
             for artist in track["track"]["artists"]:
                 artist_id = artist["id"]
                 if artist_id not in self._genres:  # Cache the artist's genres to avoid repeated API calls
                     artist_info = sp.artist(artist_id)
-                    # Saves the genres in an {"artist_name": "genre"} format
                     self._genres[artist_id] = {
                         'name': artist_info['name'],
                         'genres': artist_info['genres']
                     }
-                # Narrows down the genres for easily differentiating between them.
                 for genre in self._genres[artist_id]['genres']:
+
                     if 'country' in genre:
                         genre = 'Country'
                     elif 'rock' in genre:
@@ -284,21 +272,18 @@ class Playlist:
             count_per_genre = 1 / len(artist_genres) if artist_genres else 0
             for genre in artist_genres:
                 genre_count[genre] = genre_count.get(genre, 0) + count_per_genre
-                
-        # Saves the genres in a dict with {"genre": "%"} format
+
         self._genre_percentages = {genre: (count / total_tracks) * 100 for genre, count in genre_count.items()}
 
-    
     def fetch_audio_features(self, sp):
         # Filter out None or empty track IDs
         valid_track_ids = [track['track']['id'] for track in self._broad_track_info if track['track']['id']]
 
-        # Fetch audio features in batches of 50 due to spotifys API limit
+        # Fetch audio features in batches if necessary
         self._audio_features = {}
         for i in range(0, len(valid_track_ids), 50):  # Spotify API limits to 50 IDs per request
             batch_ids = valid_track_ids[i:i+50]
             audio_features = sp.audio_features(batch_ids)
-            # Gets the features of the first 50 tracks
             for track, features in zip(self._broad_track_info[i:i+50], audio_features):
                 if features:
                     self._audio_features[track['track']['name']] = features
@@ -306,14 +291,13 @@ class Playlist:
     def set_mood_ratings(self):
         # Set mood ratings based on audio features
         self._mood_ratings = {}
-        # Uses spotify api to get the "mood" features of the song
         for track_name, features in self._audio_features.items():
             mood = self.determine_mood(features)
             self._mood_ratings[track_name] = mood
 
     @staticmethod
     def determine_mood(features):
-        # Used the valence and energy to return a mood for the analysis
+        # This is a simplistic approach; modify as needed
         if features['valence'] > 0.7 and features['energy'] > 0.6:
             return 'Happy'
         elif features['valence'] < 0.3 and features['energy'] < 0.4:
@@ -324,9 +308,8 @@ class Playlist:
             return 'Chill'
         else:
             return 'Neutral'
-    
+
     def calculate_mood_percentages(self):
-        # Gets the percentage of each mood for making a pie chart
         mood_counts = {}
         total_tracks = len(self._mood_ratings)
 
@@ -337,29 +320,35 @@ class Playlist:
             else:
                 mood_counts[mood] = 1
 
-        # Calculate percentages in a {"mood":"%"} format
+        # Calculate percentages
         mood_percentages = {mood: (count / total_tracks) * 100 for mood, count in mood_counts.items()}
         return mood_percentages
 
-    # Added this new function
-    def set_formatted_durations(self):
-        self._track_durations_formatted = []
-        # Saves the durations in a variable (min):(sec)
-        for duration_ms in self._durations:
-            duration_seconds = duration_ms / 1000
-            minutes = duration_seconds // 60
-            seconds = duration_seconds % 60
-            formatted_duration = f"{int(minutes)}:{int(seconds):02d}"  # Format seconds to have leading zero if < 10
-            self._track_durations_formatted.append(formatted_duration)
-            
+
+# def display_page():
+
+#     SPOTIPY_REDIRECT_URI = 'http://localhost:8080/'
+    
+# #     # Keep
+#     # Set up the Streamlit app title
+#     st.title("Spotify Playlist Analyzer")
+
+#     # Load an image and display it in the Streamlit sidebar
+#     image = Image.open('Vibify.png')
+#     st.sidebar.image(image)
+
+#     # Keep
+#     # Create an input field in the sidebar for the Spotify playlist URL
+#     #if st.sidebar.text_input("Enter the URL of the Spotify playlist:"):
+#     playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
+#     return playlist_name
+
 
 def display_playlist_info(p: Playlist):
-    # This function displays all the playlist info in a window for easy viewing
-    # Format the playlist duration
     total_duration_hours = (p._combined_durations) // (1000 * 60 * 60)
     remaining_ms = p._combined_durations % (1000 * 60 * 60)
     remaining_minutes = remaining_ms // (1000 * 60)
-    # Create the number of columns as the len of the dataframe
+
     p.df.index = range(1, len(p.df) + 1)
 
     # Create two columns for layout
@@ -395,7 +384,6 @@ def display_playlist_info(p: Playlist):
     # Display the interactive table
     st.markdown("<div style='font-size: 24px; text-align: center;'><div class='bubble'>Tracklist</div></div>",
                 unsafe_allow_html=True)
-    # Set the dataframe in streamlit
     st.dataframe(p.df)
 
 
@@ -424,10 +412,9 @@ def display_bivariate_analysis(p):
     y_axis = "Popularity"
     fig_bivariate = px.scatter(p.df, x=x_axis, y=y_axis, title=f"{x_axis} vs. {y_axis}", hover_name='Name',
                                hover_data={"Duration (min)": False, "Duration": True})
-    # Display the chart
     st.plotly_chart(fig_bivariate)
 
-# UNUSED
+
 def display_multivariate_analysis(p):
     # Set up multivariate analysis with dropdown options for color and size variables
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Multivariate Analysis</div>",unsafe_allow_html=True)
@@ -445,11 +432,9 @@ def display_playlist_summary(p):
     # Provide a summary of the playlist, showing the most and least popular tracks
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Playlist Summary</div>", unsafe_allow_html=True)
 
-    # Get the most and least popular tracks
     most_popular_track = p.df.loc[p.df['Popularity'].idxmax()]
     least_popular_track = p.df.loc[p.df['Popularity'].idxmin()]
 
-    # Write the most popular and least popular tracks to the streamlit page
     st.write(
         f"Most popular track: {most_popular_track['Name']} by {most_popular_track['Artist']} ({most_popular_track['Popularity']} popularity)"
     )
@@ -460,7 +445,7 @@ def display_playlist_summary(p):
 def display_recommendations(p):
     st.write("Recommended songs:")
 
-    # Set the width and spacing for each column
+    # Set the width and spacing for each column (adjust as needed)
     col_width = 300
     spacing = 20
 
@@ -492,7 +477,7 @@ def display_song(track, col_width, spacing):
 
 def display_genre_pi(p):
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Genre Percentages</div>",unsafe_allow_html=True)
-    # Creates a pi chart with the genre and percentage
+    # Creating a pie chart
     fig = px.pie(
         names=p._genre_percentages.keys(),
         values=p._genre_percentages.values(),
@@ -505,7 +490,7 @@ def display_genre_pi(p):
 def display_mood_pi(p):
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Mood Percentages</div>",unsafe_allow_html=True)
     percentages = p.calculate_mood_percentages()
-    # Creating a pie chart with mood and percentage
+    # Creating a pie chart
     fig = px.pie(
         names=percentages.keys(),
         values=percentages.values(),
@@ -514,11 +499,8 @@ def display_mood_pi(p):
     #Showing the pie chart
     st.plotly_chart(fig)
 
-
 def display_top10_artists(p):
-    # This function is to display the top 10 artists in a nice bar chart
     artist_popularity = {}
-    # Loop over the track_info to get all the popularitites in a long list
     for track_info in p.track_info.values():
         artists = track_info['artist'].split(", ")
         for artist in artists:
@@ -526,14 +508,13 @@ def display_top10_artists(p):
                 artist_popularity[artist] += track_info['popularity']
             else:
                 artist_popularity[artist] = track_info['popularity']
-    # Get the one with the highest popularity
+
     max_popularity = max(artist_popularity.values())
-    # Turn the popularities into percentages
     artist_popularity = {artist: (popularity / max_popularity) * 100 for artist, popularity in
                          artist_popularity.items()}
-    # Sort the artists and the popularities
+
     sorted_artists = sorted(artist_popularity.items(), key=lambda x: x[1], reverse=True)[:10]
-    # Return them
+
     top_artists, top_popularity = zip(*sorted_artists)
 
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Top 10 Artists by Popularity</div>",unsafe_allow_html=True)
@@ -541,22 +522,19 @@ def display_top10_artists(p):
     fig = px.bar(df_top_artists, x='Popularity', y='Artist', orientation='h')
     fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                       marker_line_width=1.5, opacity=0.6)
-    # Display the information using plotly
     st.plotly_chart(fig)
 
 
 def display_top10_songs(p):
-    # Get the popularities of the songs from the dataframe
     max_popularity = p.df['Popularity'].max()
     p.df['Popularity'] = (p.df['Popularity'] / max_popularity) * 100
-    # Get the top 10 songs with the highest popularities
+
     top_songs = p.df.nlargest(10, 'Popularity')
 
     st.markdown("<div class='bubble' style='font-size: 24px; text-align: center;'>Top 10 Songs by Popularity</div>",unsafe_allow_html=True)
     fig = px.bar(top_songs[::-1], x='Popularity', y='Name', orientation='h')
     fig.update_traces(marker_color='rgb(255, 123, 127)', marker_line_color='rgb(165, 38, 42)',
                       marker_line_width=1.5, opacity=0.6)
-    # Display it using plotly in a bar chart
     st.plotly_chart(fig)
 
 
@@ -575,19 +553,17 @@ def run(p):
 
 # Real Main
 def main():
-    # Spotify app credentials from your Spotify Developer Dashboard (store them in secrets)
-    SPOTIPY_CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
-    SPOTIPY_CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
-    SPOTIPY_REDIRECT_URI = st.secrets["SPOTIPY_REDIRECT_URI"]
-
-    # Display the title
+    #print('RAN THIS')
+    # Spotify app credentials from your Spotify Developer Dashboard
+    SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
+    
     st.title("Spotify Playlist Analyzer")
 
-    # Load the logo and display it in the sidebar
+    # Load an image and display it in the Streamlit sidebar
     image = Image.open('Vibify.png')
     st.sidebar.image(image)
     
-    # Made a sweet looking button (that isn't even used)
+    
     button_style = f"""
     <style>
         /* Button style */
@@ -605,36 +581,39 @@ def main():
         }}
     </style>
     """
+
     # Display the custom CSS style
     st.markdown(button_style, unsafe_allow_html=True)
 
-    # Check to see if the playlist name exists (if someone droped a link in the sidebar)
+
     try:
         playlist_name
     except NameError:
         playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
 
-    
-    # Unused
-    #def get_spotify_auth():
+
+
+    def get_spotify_auth():
         # auth_manager = SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
         #                             client_secret=SPOTIPY_CLIENT_SECRET,
         #                             redirect_uri=SPOTIPY_REDIRECT_URI,
         #                             scope="user-library-read")
         # sp = spotipy.Spotify(auth_manager=auth_manager)
-        #sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-            #client_id='2bdfeb8580304b9fb343ff8cc8744e76',
-            #client_secret='73cbcc49de99490f821c2925c2b41419',
-            #redirect_uri='https://spotifyanalyzertest.streamlit.app',  # Update the redirect_uri
-            #scope='playlist-read-private',
-            #show_dialog=True
-        #))
-        #st.write(f'{sp}')
-        #return sp
+        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+            client_id=st.secrets['SPOTIPY_CLIENT_ID'],
+            client_secret=st.secrets['SPOTIPY_CLIENT_SECRET'],
+            redirect_uri='https://spotifyanalyzertest.streamlit.app',  # Update the redirect_uri
+            scope='playlist-read-private',
+            show_dialog=True
+        ))
+        st.write(f'{sp}')
+        return sp
+
+
     
 
     # NEW
-    #playlists_dict = {}
+    playlists_dict = {}
     #if st.sidebar.button("Manage Spotify Account"):
         #st.write("GOT HERE")
         #sp = get_spotify_auth()
@@ -651,17 +630,7 @@ def main():
             #st.write('else executed')
         
         # Spotify API credentials
-        #CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
-        #CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
-        
-        # # Authenticate the user with Spotify
-        # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-        #     client_id='2bdfeb8580304b9fb343ff8cc8744e76',
-        #     client_secret='73cbcc49de99490f821c2925c2b41419',
-        #     redirect_uri='https://spotifyanalyzertest.streamlit.app/',  # Update the redirect_uri
-        #     scope='playlist-read-private',
-        #     show_dialog=True
-        # ))
+
         # sp_oauth = SpotifyOAuth(
         #     client_id=SPOTIPY_CLIENT_ID,
         #     client_secret=SPOTIPY_CLIENT_SECRET,
@@ -680,7 +649,7 @@ def main():
         # st.session_state.spotify_playlists = playlists['items']
 
         # playlist_name = None
-    
+        
 
     def generate_analysis(playlist):
         #print(f"button for {playlist['name']} hit")
@@ -689,29 +658,30 @@ def main():
         #st.sidebar.text(playlist_name)
         #p = c.Playlist(playlist_name)
         #c.run(p)
-   
+
         # Print the contents of the session state variable and add a button for each playlist
-    # if 'spotify_playlists' in st.session_state:
-        # playlists = st.session_state.spotify_playlists
-        # for idx, playlist in enumerate(playlists):
-            #st.sidebar.write(f"{idx + 1}. {playlist['name']}")
+    if 'spotify_playlists' in st.session_state:
+        playlists = st.session_state.spotify_playlists
+        for idx, playlist in enumerate(playlists):
+            st.sidebar.write(f"{idx + 1}. {playlist['name']}")
             #st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
-            #generate_button = st.sidebar.button(f"Generate Analysis for {playlist['name']}", key=f"generate_{idx}")
-            #st.sidebar.markdown("<hr style='margin: 0px;'>", unsafe_allow_html=True)
-            #if generate_button:
+            generate_button = st.sidebar.button(f"Generate Analysis for {playlist['name']}", key=f"generate_{idx}")
+            st.sidebar.markdown("<hr style='margin: 0px;'>", unsafe_allow_html=True)
+            if generate_button:
                 # Call a function to generate the analysis for the selected playlist
-                #playlist_name = generate_analysis(playlist)
-    #else:
+                playlist_name = generate_analysis(playlist)
+    else:
         #st.write("No Spotify playlists available. Please log in to Spotify.")
-        #pass
-    
+        pass
+
 
     #playlist_name = c.display_page()
     flag = False
 
     # Define the desired loading bar color (Spotify green)
     loading_bar_color = "#1DB954"
-    # Made a sweet loading bar
+
+    # Define the custom CSS style for the loading bar with the chosen color
     loading_bar_style = f"""
     <style>
     @keyframes loading {{
@@ -739,11 +709,10 @@ def main():
     </style>
     """
 
-    # Display the loading bar when the project is loading
+    # Display the custom CSS style
     st.markdown(loading_bar_style, unsafe_allow_html=True)
     loading_container = st.empty()
 
-    # Display the loading bar when a link is pasted into the bar
     if playlist_name:
         loading_container.markdown('<div class="loading-bar"><div></div></div>', unsafe_allow_html=True)
         # This is where you instantiate the class
@@ -757,12 +726,11 @@ def main():
 
     # If we have a valid playlist ID, proceed to fetch and display playlist data
     if flag:
+        #st.balloons(bg_color="green")
         st.balloons()  # Show celebration balloons in the app
         run(p)
-    # Remove cache after each run 
     cache_file = ".cache"
     if os.path.exists(cache_file):
         os.remove(cache_file)
-        
 if __name__ == '__main__':
     main()
