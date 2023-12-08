@@ -27,7 +27,7 @@ playlist link directly into the website.
 
 ## Run Instructions
 ### FOR PUBLIC VERSION:
-* Go to the website link
+* Go to the website link (vibify.streamlit.app)
 * Copy and paste your spotify link into the side bar and hit enter
 
 ### FOR LOCAL VERSION:
