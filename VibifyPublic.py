@@ -614,23 +614,23 @@ def main():
     except NameError:
         playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
 
-    """
+    
     # Unused
-    def get_spotify_auth():
+    #def get_spotify_auth():
         # auth_manager = SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
         #                             client_secret=SPOTIPY_CLIENT_SECRET,
         #                             redirect_uri=SPOTIPY_REDIRECT_URI,
         #                             scope="user-library-read")
         # sp = spotipy.Spotify(auth_manager=auth_manager)
-        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-            client_id='2bdfeb8580304b9fb343ff8cc8744e76',
-            client_secret='73cbcc49de99490f821c2925c2b41419',
-            redirect_uri='https://spotifyanalyzertest.streamlit.app',  # Update the redirect_uri
-            scope='playlist-read-private',
-            show_dialog=True
-        ))
-        st.write(f'{sp}')
-        return sp
+        #sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+            #client_id='2bdfeb8580304b9fb343ff8cc8744e76',
+            #client_secret='73cbcc49de99490f821c2925c2b41419',
+            #redirect_uri='https://spotifyanalyzertest.streamlit.app',  # Update the redirect_uri
+            #scope='playlist-read-private',
+            #show_dialog=True
+        #))
+        #st.write(f'{sp}')
+        #return sp
     
 
     # NEW
@@ -680,7 +680,7 @@ def main():
         # st.session_state.spotify_playlists = playlists['items']
 
         # playlist_name = None
-    """
+    
 
     def generate_analysis(playlist):
         #print(f"button for {playlist['name']} hit")
@@ -689,22 +689,22 @@ def main():
         #st.sidebar.text(playlist_name)
         #p = c.Playlist(playlist_name)
         #c.run(p)
-    """
+   
         # Print the contents of the session state variable and add a button for each playlist
-    if 'spotify_playlists' in st.session_state:
-        playlists = st.session_state.spotify_playlists
-        for idx, playlist in enumerate(playlists):
-            st.sidebar.write(f"{idx + 1}. {playlist['name']}")
+    # if 'spotify_playlists' in st.session_state:
+        # playlists = st.session_state.spotify_playlists
+        # for idx, playlist in enumerate(playlists):
+            #st.sidebar.write(f"{idx + 1}. {playlist['name']}")
             #st.sidebar.write(f"   External URL: {playlist['external_urls']['spotify']}")
-            generate_button = st.sidebar.button(f"Generate Analysis for {playlist['name']}", key=f"generate_{idx}")
-            st.sidebar.markdown("<hr style='margin: 0px;'>", unsafe_allow_html=True)
-            if generate_button:
+            #generate_button = st.sidebar.button(f"Generate Analysis for {playlist['name']}", key=f"generate_{idx}")
+            #st.sidebar.markdown("<hr style='margin: 0px;'>", unsafe_allow_html=True)
+            #if generate_button:
                 # Call a function to generate the analysis for the selected playlist
-                playlist_name = generate_analysis(playlist)
-    else:
+                #playlist_name = generate_analysis(playlist)
+    #else:
         #st.write("No Spotify playlists available. Please log in to Spotify.")
-        pass
-    """
+        #pass
+    
 
     #playlist_name = c.display_page()
     flag = False
