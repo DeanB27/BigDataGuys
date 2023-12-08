@@ -10,7 +10,7 @@ The purpose of this software requirements document is to outline the requirement
    SA5: Upon inputting a public playlist link, the program shall pull the user's playlist duration.   
    SA6: Upon inputting a public playlist link, the program shall pull the user's playlist tracks.   
    SA7: Upon inputting a public playlist link, the program shall pull the user's playlist track artists.   
-   SA8: Upon inputting a public playlist link, the program shall pull the user's playlist track popularities.
+   SA8: Upon inputting a public playlist link, the program shall pull the user's playlist track popularities.  
    SA9: Upon inputting a public playlist link, the program shall pull song recommendations based on songs in the user's inputted playlist.    
 
 3. Genre and Mood Metric Analysis  
