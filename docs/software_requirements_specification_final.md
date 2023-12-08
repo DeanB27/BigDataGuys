@@ -1,5 +1,13 @@
 # Overview
-The purpose of this software requirements document is to outline the requirements that our program must adhere to. These include functionality features and backend features. The main requirments outlined include the dashboard requirements, analysis requirements, accessibility requirements, as well as API connectivity requirements.  
+The purpose of this software requirements document is to outline the requirements that our program must adhere to. These include functionality features and backend features. The main requirments outlined include the dashboard requirements, analysis requirements, accessibility requirements, as well as API connectivity requirements.
+
+# Hyperlinks to all artifacts
+[Proposal](https://github.com/ianmccourt/GVSU-CIS350-BigDataGuys/blob/main/docs/proposal.md)
+[Use Case Diagrams](https://github.com/ianmccourt/GVSU-CIS350-BigDataGuys/blob/main/artifacts/use_case_diagrams/use%20cases%20cis350.pdf)
+[Task Management](https://github.com/ianmccourt/GVSU-CIS350-BigDataGuys/blob/main/docs/HW4-TaskManagement.md)
+[Midterm Presentation](https://github.com/ianmccourt/GVSU-CIS350-BigDataGuys/blob/main/docs/Big%20Data%20Guys%20Presentation.pdf)
+[Final Presentation](https://github.com/ianmccourt/GVSU-CIS350-BigDataGuys/blob/main/docs/Vibify%20-%20Final%20Presentation.pdf)
+[Midterm SRS](https://github.com/ianmccourt/GVSU-CIS350-BigDataGuys/blob/main/docs/software_requirements_specification.md)
 
 # Functional Requirements
 1. Spotify API Connectivity  
