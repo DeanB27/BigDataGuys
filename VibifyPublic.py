@@ -682,13 +682,13 @@ def main():
         # playlist_name = None
     
 
-    def generate_analysis(playlist):
-        #print(f"button for {playlist['name']} hit")
-        playlist_name = playlist['external_urls']['spotify']
-        return playlist_name
-        #st.sidebar.text(playlist_name)
-        #p = c.Playlist(playlist_name)
-        #c.run(p)
+def generate_analysis(playlist):
+    #print(f"button for {playlist['name']} hit")
+    playlist_name = playlist['external_urls']['spotify']
+    return playlist_name
+    #st.sidebar.text(playlist_name)
+    #p = c.Playlist(playlist_name)
+    #c.run(p)
    
         # Print the contents of the session state variable and add a button for each playlist
     # if 'spotify_playlists' in st.session_state:
@@ -763,5 +763,6 @@ def main():
     cache_file = ".cache"
     if os.path.exists(cache_file):
         os.remove(cache_file)
+        
 if __name__ == '__main__':
     main()
