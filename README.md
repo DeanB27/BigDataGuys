@@ -33,4 +33,4 @@ playlist links directly into the website.
 ### FOR LOCAL VERSION:
 * Put the vibify png, the localmain, and localclass python files in the same directory in your IDE.
 * Download the Streamlit, Plotly, Pandas, and Spotipy python libraries, using "pip install library_name".
-* In the directory terminal, type streamlit run localmain.py" and hit enter.
+* In the directory terminal, type "streamlit run localmain.py" and hit enter.
