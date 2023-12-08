@@ -1,11 +1,11 @@
 # Big Data Guys
 
-This is the description for a Spotify playlist analyzer. In this analyzer we plan to implement a way to link 
-your Spotify playlist to our analyzer, to return an analysis of the songs in your playlist by genre. We also 
-plan to give a style rating to the user's playlist such as "happy" or "sad" depending on the vibe of the 
-playlist. In addition to this we plan to implement a system that will create a list of recommendations with similar songs to their old 
-playlist. We plan to host this program via a Streamlit pages website where people can copy and paste their spotify 
-playlist link directly into the website. 
+This Github repo contains our Spotify playlist analyzer (Vibify). In this analyzer we implemented a way to link 
+your Spotify playlist to our analyzer, which returns an analysis of the songs in your playlist by genre, mood, and popularity. We also 
+gave a style rating to the user's playlist such as "happy" or "sad" depending on the vibe of the 
+playlist. In addition to this, we implemented a system that creates a list of recommendations with similar songs to the inputted 
+playlist. We hosted this program via a Streamlit website where people can copy and paste their spotify 
+playlist links directly into the website. 
 
 ## Team Members
 
