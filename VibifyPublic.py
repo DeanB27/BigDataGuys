@@ -14,9 +14,9 @@ from spotipy.oauth2 import SpotifyOAuth
 import os
 
 # Spotify app credentials from your Spotify Developer Dashboard (remember to save these as secrets)
-SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
-SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
-SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
+SPOTIPY_CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
+SPOTIPY_CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
+SPOTIPY_REDIRECT_URI = st.secrets["SPOTIPY_REDIRECT_URI"]
 
 class Playlist:
     def __init__(self, playlist_name):
@@ -24,8 +24,8 @@ class Playlist:
         # Your Spotify API credentials (note: it's not secure to include your credentials in the code)
         # client_id = '8cfa81fbc4074f3aad32716a36044864'
         # client_secret = 'a64ec813eaa24d19a42c694dbc61ba35'
-        client_id = '2bdfeb8580304b9fb343ff8cc8744e76'
-        client_secret = '73cbcc49de99490f821c2925c2b41419'
+        client_id = st.secrets["SPOTIPY_CLIENT_ID"]
+        client_secret = st.secrets["SPOTIPY_CLIENT_SECRET"]
         
         # Set up the Spotify client credentials manager and Spotipy client
         client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
@@ -576,9 +576,9 @@ def run(p):
 # Real Main
 def main():
     # Spotify app credentials from your Spotify Developer Dashboard (store them in secrets)
-    SPOTIPY_CLIENT_ID = '2bdfeb8580304b9fb343ff8cc8744e76'
-    SPOTIPY_CLIENT_SECRET = '73cbcc49de99490f821c2925c2b41419'
-    SPOTIPY_REDIRECT_URI = 'https://spotifyanalyzertest.streamlit.app'
+    SPOTIPY_CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
+    SPOTIPY_CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
+    SPOTIPY_REDIRECT_URI = st.secrets["SPOTIPY_REDIRECT_URI"]
 
     # Display the title
     st.title("Spotify Playlist Analyzer")
