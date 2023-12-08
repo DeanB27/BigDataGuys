@@ -614,7 +614,7 @@ def main():
     except NameError:
         playlist_name = st.sidebar.text_input("Enter the URL of the Spotify playlist:")
 
-"""
+    """
     # Unused
     def get_spotify_auth():
         # auth_manager = SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
@@ -680,7 +680,7 @@ def main():
         # st.session_state.spotify_playlists = playlists['items']
 
         # playlist_name = None
-"""
+    """
 
     def generate_analysis(playlist):
         #print(f"button for {playlist['name']} hit")
@@ -689,7 +689,7 @@ def main():
         #st.sidebar.text(playlist_name)
         #p = c.Playlist(playlist_name)
         #c.run(p)
-"""
+    """
         # Print the contents of the session state variable and add a button for each playlist
     if 'spotify_playlists' in st.session_state:
         playlists = st.session_state.spotify_playlists
@@ -704,7 +704,7 @@ def main():
     else:
         #st.write("No Spotify playlists available. Please log in to Spotify.")
         pass
-"""
+    """
 
     #playlist_name = c.display_page()
     flag = False
