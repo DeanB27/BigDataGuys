@@ -16,21 +16,21 @@ playlist links directly into the website.
 
 ## Prerequisites
 ### FOR PUBLIC VERSION:
-* An internet connection
-* A link to a public spotify playlist
+* You will need a stable internet connection.
+* You will need a link to a public Spotify playlist.
 
 ### FOR LOCAL VERSION:
-* A python IDE
-* Python 3
-* Streamlit, Plotly, Pandas, Spotipy python libraries
-* Both the main and class python files, and the vibify logo in the same directory
+* You will need a python IDE of your choosing.
+* You will need Python 3 installed.
+* You will need to install the Streamlit, Plotly, Pandas, and Spotipy python libraries.
+* You will need both the main and class python files, and the vibify logo in the same directory.
 
 ## Run Instructions
 ### FOR PUBLIC VERSION:
-* Go to the website link [Vibify](https://vibify.streamlit.app/)
-* Copy and paste your spotify link into the side bar and hit enter
+* Go to the website link. [Vibify](https://vibify.streamlit.app/)
+* You then need to copy and paste your Spotify link into the side bar and hit enter.
 
 ### FOR LOCAL VERSION:
-* Put the vibify png, the localmain, and localclass python files in the same directory in your IDE
-* Download the Streamlit, Plotly, Pandas, and Spotipy libraries
-* In the directory terminal, type streamlit run localmain.py" and hit enter
+* Put the vibify png, the localmain, and localclass python files in the same directory in your IDE.
+* Download the Streamlit, Plotly, Pandas, and Spotipy python libraries, using "pip install <library-name>".
+* In the directory terminal, type streamlit run localmain.py" and hit enter.
